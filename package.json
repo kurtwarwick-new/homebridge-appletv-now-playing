@@ -1,0 +1,26 @@
+{
+  "name": "homebridge-appletv-now-playing",
+  "version": "0.1.0",
+  "description": "A Homebridge plugin to expose an Apple TV device as a Television, and it's now playign information as characteristics.",
+  "license": "MIT",
+  "keywords": [
+    "homebridge-plugin",
+    "homebridge",
+    "homebridge-apple-tv",
+    "node-appletv"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kurtwarwick-new/homebridge-appletv-now-playing.git"
+  },
+  "dependencies": {
+    "@types/lodash": "^4.14.149",
+    "hap-nodejs": "^0.5.6",
+    "lodash": "^4.17.15",
+    "node-appletv": "^1.1.0"
+  },
+  "engines": {
+    "node": ">=0.12.0",
+    "homebridge": ">=0.2.0"
+  }
+}
