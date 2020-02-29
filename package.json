@@ -1,26 +1,35 @@
 {
   "name": "homebridge-appletv-now-playing",
-  "version": "0.1.0",
-  "description": "A Homebridge plugin to expose an Apple TV device as a Television, and it's now playign information as characteristics.",
+  "version": "0.1.63",
+  "description": "[WIP!! Please don't use just yet] A Homebridge plugin to expose an Apple TV device as a Television, and it's now playign information as characteristics.",
   "license": "MIT",
   "keywords": [
     "homebridge-plugin",
     "homebridge",
     "homebridge-apple-tv",
+    "homebridge-apple-tv-now-playing",
     "node-appletv"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/kurtwarwick-new/homebridge-appletv-now-playing.git"
+    "url": "git+https://github.com/kurtwarwick-new/homebridge-appletv-now-playing.git"
   },
   "dependencies": {
-    "@types/lodash": "^4.14.149",
-    "hap-nodejs": "^0.5.6",
     "lodash": "^4.17.15",
-    "node-appletv": "^1.1.0"
+    "node-appletv-x": "^1.0.13"
   },
   "engines": {
     "node": ">=0.12.0",
     "homebridge": ">=0.2.0"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/kurtwarwick-new/homebridge-appletv-now-playing/issues"
+  },
+  "homepage": "https://github.com/kurtwarwick-new/homebridge-appletv-now-playing#readme",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kurt Warwick"
 }
