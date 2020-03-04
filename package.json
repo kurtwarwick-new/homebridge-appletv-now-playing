@@ -1,6 +1,6 @@
 {
   "name": "homebridge-appletv-now-playing",
-  "version": "0.1.63",
+  "version": "0.1.77",
   "description": "[WIP!! Please don't use just yet] A Homebridge plugin to expose an Apple TV device as a Television, and it's now playign information as characteristics.",
   "license": "MIT",
   "keywords": [

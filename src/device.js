@@ -13,6 +13,9 @@ module.exports = function Device(platform, config, device) {
   this.configureInformationService = configureInformationService.bind(this);
   this.configureStateService = configureStateService.bind(this);
   this.onNowPlaying = onNowPlaying.bind(this);
+  this.onMessage = onMessage.bind(this);
+  this.onSupportedCommands = onSupportedCommands.bind(this);
+  this.onDeviceInfo = onDeviceInfo.bind(this);
 
   function configureAccessory() {
     let accessoryUid = this.platform.api.hap.uuid.generate(`${this.device.uid}_apple_tv`);
@@ -42,6 +45,8 @@ module.exports = function Device(platform, config, device) {
 
     this.configureInformationService(accessory);
     this.configureStateService(accessory);
+
+    setInterval(() => this.device.sendIntroduction().then(this.onDeviceInfo), 5000);
   }
 
   function configureInformationService(accessory) {
@@ -81,13 +86,30 @@ module.exports = function Device(platform, config, device) {
     !this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.Active) && this.stateService.addCharacteristic(this.platform.api.hap.Characteristic.Active);
 
     this.device.on("nowPlaying", this.onNowPlaying);
+    this.device.on("message", this.onMessage);
+    this.device.on("supportedCommands", this.onSupportedCommands);
+  }
+
+  function onDeviceInfo(message) {
+    this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.On).updateValue(message.payload.logicalDeviceCount == 1);
+  }
+
+  function onSupportedCommands(message) {
+    if (!!message) {
+      if (!message.length) {
+        this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(false);
+      }
+    }
+  }
+
+  function onMessage(message) {
+    if (!!message) {
+      
+    }
   }
 
   function onNowPlaying(message) {
-    this.platform.debug(`Now Playing information received for accessory with id ${this.device.uid}.`);
-    this.platform.debug(message);
-
-    if (message.playbackState && message.playbackState.length > 1) {
+    if (message && message.playbackState && message.playbackState.length > 1) {
       message.playbackState = message.playbackState[0].toUpperCase() + message.playbackState.substring(1).toLowerCase();
     }
 
@@ -101,7 +123,7 @@ module.exports = function Device(platform, config, device) {
     this.stateService.getCharacteristic(Characteristics.ElapsedTime).updateValue(message && message.elapsedTime > 0 ? message.elapsedTime : "-");
     this.stateService.getCharacteristic(Characteristics.Duration).updateValue(message && message.duration > 0 ? message.duration : "-");
 
-    this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(message && message.playbackState === "playing");
+    this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(message && message.playbackState === "Playing");
   }
 
   this.configureAccessory();
