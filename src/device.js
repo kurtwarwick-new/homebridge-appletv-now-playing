@@ -83,7 +83,6 @@ module.exports = function Device(platform, config, device) {
         !this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.Active) && this.stateService.addCharacteristic(this.platform.api.hap.Characteristic.Active);
 
         this.device.on("nowPlaying", this.onNowPlaying);
-        this.device.on("message", this.onMessage);
         this.device.on("supportedCommands", this.onSupportedCommands);
     }
 
