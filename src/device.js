@@ -18,7 +18,7 @@ class Device {
 
         if (!accessory) {
             if (!accessory) {
-                this.platform.debug(`Creating accessory '${this.device.uid}_apple_tv' (${this.device.name} [${this.device.uid}]).`);
+                this.platform.debug(`Creating accessory (${this.device.name} [${this.device.uid}]).`);
 
                 accessory = new this.platform.api.platformAccessory(this.config.name, accessoryUid, this.platform.api.hap.Accessory.Categories.TELEVISION);
                 accessory.context.uid = this.device.uid;
@@ -26,14 +26,14 @@ class Device {
                 this.platform.registerAccessories([accessory]);
             }
             else {
-                this.platform.debug(`Updating accessory '${this.device.uid}_apple_tv' (${this.device.name} [${this.device.uid}]).`);
+                this.platform.debug(`Updating accessory (${this.device.name} [${this.device.uid}]).`);
 
                 accessory.displayName = this.config.name;
 
                 this.platform.updateAccessories([accessory]);
             }
 
-            this.platform.debug(`Accessory '${this.device.uid}_apple_tv' (${this.device.name} [${this.device.uid}]) ready.`);
+            this.platform.debug(`Accessory (${this.device.name} [${this.device.uid}]) ready.`);
         }
 
         this.configureInformationService(accessory);
@@ -43,7 +43,7 @@ class Device {
     }
 
     configureInformationService = accessory => {
-        this.platform.debug(`Configuring the information service for accessory '${this.device.uid}_apple_tv' (${this.device.name} [${this.device.uid}]).`);
+        this.platform.debug(`Configuring the information service for accessory (${this.device.name} [${this.device.uid}]).`);
 
         try {
             let accessoryInformationService = accessory.getService(this.platform.api.hap.Service.AccessoryInformation);
@@ -57,16 +57,16 @@ class Device {
                 .setCharacteristic(this.platform.api.hap.Characteristic.Model, "Apple TV")
                 .setCharacteristic(this.platform.api.hap.Characteristic.SerialNumber, this.device.uid);
 
-            this.platform.debug(`Information service for accessory '${this.device.uid}_apple_tv' (${this.device.name} [${this.device.uid}]) configured.`);
+            this.platform.debug(`Information service for accessory (${this.device.name} [${this.device.uid}]) configured.`);
         }
         catch (error) {
-            this.platform.debug(`Information service for accessory '${this.device.uid}_apple_tv' (${this.device.name} [${this.device.uid}]) could not be configured.`);
+            this.platform.debug(`Information service for accessory (${this.device.name} [${this.device.uid}]) could not be configured.`);
             this.platform.debug(error);
         }
     }
     
     configureStateService = accessory => {
-        this.platform.debug(`Configuring the state service for accessory '${this.device.uid}_apple_tv' (${this.device.name} [${this.device.uid}]).`);
+        this.platform.debug(`Configuring the state service for accessory (${this.device.name} [${this.device.uid}]).`);
 
         try {
             this.stateService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Switch);
@@ -89,10 +89,10 @@ class Device {
             this.device.on("nowPlaying", this.onNowPlaying);
             this.device.on("supportedCommands", this.onSupportedCommands);
 
-            this.platform.debug(`State service for accessory '${this.device.uid}_apple_tv' (${this.device.name} [${this.device.uid}]) configured.`);
+            this.platform.debug(`State service for accessory (${this.device.name} [${this.device.uid}]) configured.`);
         }
         catch (error) {
-            this.platform.debug(`State service for accessory '${this.device.uid}_apple_tv' (${this.device.name} [${this.device.uid}]) could not be configured.`);
+            this.platform.debug(`State service for accessory (${this.device.name} [${this.device.uid}]) could not be configured.`);
             this.platform.debug(error);
         }
     }
