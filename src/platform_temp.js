@@ -29,11 +29,11 @@ function Platform(log, config, api) {
                 config.verbose && console.log(`connected to apple tv with identifier ${credentials.uniqueIdentifier}.`);
 
                 connectedDevice.on("nowPlaying", this.debug);
-                connectedDevice.on("supportedCommands", this.debug);
+                //connectedDevice.on("supportedCommands", this.debug);
 
                 setInterval(
                     () =>
-                        connectedDevice.sendIntroduction().then(this.debug),
+                        //connectedDevice.sendIntroduction().then(this.debug),
                     5000
                 );
             } catch (error) {
