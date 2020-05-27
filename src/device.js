@@ -49,45 +49,55 @@ module.exports = function Device(platform, config, device) {
     function configureInformationService(accessory) {
         this.platform.debug(`Configuring the Information Service for accessory with id ${this.device.uid}.`);
 
-        let accessoryInformationService = accessory.getService(this.platform.api.hap.Service.AccessoryInformation);
+        try {
+            let accessoryInformationService = accessory.getService(this.platform.api.hap.Service.AccessoryInformation);
 
-        if (!accessoryInformationService) {
-            accessoryInformationService = accessory.addService(this.platform.api.hap.Service.AccessoryInformation);
+            if (!accessoryInformationService) {
+                accessoryInformationService = accessory.addService(this.platform.api.hap.Service.AccessoryInformation);
+            }
+
+            accessoryInformationService
+                .setCharacteristic(this.platform.api.hap.Characteristic.Manufacturer, "Apple")
+                .setCharacteristic(this.platform.api.hap.Characteristic.Model, "Apple TV")
+                .setCharacteristic(this.platform.api.hap.Characteristic.SerialNumber, this.device.uid);
+
+            this.platform.debug(`Information Service for accessory with id ${this.device.uid} configured.`);
+        } catch (error) {
+            this.platform.debug(`Information Service for accessory with id ${this.device.uid} could not be configured.`);
+            this.platform.debug(error);
         }
-
-        accessoryInformationService
-            .setCharacteristic(this.platform.api.hap.Characteristic.Manufacturer, "Apple")
-            .setCharacteristic(this.platform.api.hap.Characteristic.Model, "Apple TV")
-            .setCharacteristic(this.platform.api.hap.Characteristic.SerialNumber, this.device.uid);
-
-        this.platform.debug(`Information Service for accessory with id ${this.device.uid} configured.`);
     }
 
     function configureStateService(accessory) {
         this.platform.debug(`Configuring the State Service for accessory with id ${this.device.uid}.`);
 
-        this.stateService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Switch);
+        try {
+            this.stateService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Switch);
 
-        if (!this.stateService) {
-            this.stateService = accessory.addService(this.platform.api.hap.Service.Switch);
+            if (!this.stateService) {
+                this.stateService = accessory.addService(this.platform.api.hap.Service.Switch);
+            }
+
+            !this.stateService.getCharacteristic(Characteristics.State) && this.stateService.addCharacteristic(Characteristics.State);
+            !this.stateService.getCharacteristic(Characteristics.Type) && this.stateService.addCharacteristic(Characteristics.Type);
+            !this.stateService.getCharacteristic(Characteristics.Title) && this.stateService.addCharacteristic(Characteristics.Title);
+            !this.stateService.getCharacteristic(Characteristics.Artist) && this.stateService.addCharacteristic(Characteristics.Artist);
+            !this.stateService.getCharacteristic(Characteristics.Album) && this.stateService.addCharacteristic(Characteristics.Album);
+            !this.stateService.getCharacteristic(Characteristics.Application) && this.stateService.addCharacteristic(Characteristics.Application);
+            !this.stateService.getCharacteristic(Characteristics.ApplicationBundleId) && this.stateService.addCharacteristic(Characteristics.ApplicationBundleId);
+            !this.stateService.getCharacteristic(Characteristics.ElapsedTime) && this.stateService.addCharacteristic(Characteristics.ElapsedTime);
+            !this.stateService.getCharacteristic(Characteristics.Duration) && this.stateService.addCharacteristic(Characteristics.Duration);
+
+            !this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.Active) && this.stateService.addCharacteristic(this.platform.api.hap.Characteristic.Active);
+
+            this.device.on("nowPlaying", this.onNowPlaying);
+            this.device.on("supportedCommands", this.onSupportedCommands);
+
+            this.platform.debug(`State Service for accessory with id ${this.device.uid} configured.`);
+        } catch (error) {
+            this.platform.debug(`State Service for accessory with id ${this.device.uid} could not be configured.`);
+            this.platform.debug(error);
         }
-
-        !this.stateService.getCharacteristic(Characteristics.State) && this.stateService.addCharacteristic(Characteristics.State);
-        !this.stateService.getCharacteristic(Characteristics.Type) && this.stateService.addCharacteristic(Characteristics.Type);
-        !this.stateService.getCharacteristic(Characteristics.Title) && this.stateService.addCharacteristic(Characteristics.Title);
-        !this.stateService.getCharacteristic(Characteristics.Artist) && this.stateService.addCharacteristic(Characteristics.Artist);
-        !this.stateService.getCharacteristic(Characteristics.Album) && this.stateService.addCharacteristic(Characteristics.Album);
-        !this.stateService.getCharacteristic(Characteristics.Application) && this.stateService.addCharacteristic(Characteristics.Application);
-        !this.stateService.getCharacteristic(Characteristics.ApplicationBundleId) && this.stateService.addCharacteristic(Characteristics.ApplicationBundleId);
-        !this.stateService.getCharacteristic(Characteristics.ElapsedTime) && this.stateService.addCharacteristic(Characteristics.ElapsedTime);
-        !this.stateService.getCharacteristic(Characteristics.Duration) && this.stateService.addCharacteristic(Characteristics.Duration);
-
-        !this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.Active) && this.stateService.addCharacteristic(this.platform.api.hap.Characteristic.Active);
-
-        this.device.on("nowPlaying", this.onNowPlaying);
-        this.device.on("supportedCommands", this.onSupportedCommands);
-
-        this.platform.debug(`State Service for accessory with id ${this.device.uid} configured.`);
     }
 
     function onDeviceInfo(message) {
