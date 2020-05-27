@@ -95,7 +95,9 @@ function Platform(log, config, api) {
             this.debug(`Attempting to connect to Apple TV ${device.name} [${device.uid}].`);
 
             device.openConnection(device.credentials).then(connectedDevice => {
-              connectedDevice.on("nowPlaying", this.debug);
+              this.debug("connected.");
+              connectedDevice.on("nowPlaying", message => this.debug("NOWPLAYING"));
+              connectedDevice.on("message", message => this.debug("message"));
               //this.onDeviceConnected(deviceConfiguration, connectedDevice), this.onDeviceConnectionFailed);
             });
         } else {
