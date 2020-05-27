@@ -1,4 +1,4 @@
-const appleTv = require("node-appletv-x");
+const appletv = require("node-appletv-x");
 const Device = require("./device");
 
 function Platform(log, config, api) {

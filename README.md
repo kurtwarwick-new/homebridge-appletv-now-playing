@@ -34,9 +34,9 @@ The media type is calculated by checking artist and album information. This char
 
 In order to retrieve credentials for your Apple TV, please follow these step
 
-1. Execute the cli application bundled with this package
+1. Execute the cli application bundled with this package from the package directory
 ```
-$ node .\bin\cli.js
+/path/to/homebridge-appletv-now-playing $ node .\bin\cli.js
 ```
 2. Choose the device with which you would like to pair.
 3. Enter the PIN shown on your device.
@@ -44,7 +44,7 @@ $ node .\bin\cli.js
 Example:
 
 ```
-$ node .\bin\cli.js
+/path/to/homebridge-appletv-now-playing $ node .\bin\cli.js
 
 Scanning for devices...
 These Apple TVs were found:
