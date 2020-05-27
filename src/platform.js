@@ -74,7 +74,9 @@ function Platform(log, config, api) {
     this.debug(`Found Apple TV with identifier ${credentials.uniqueIdentifier}.`);
     this.debug(`Attempting to connect to Apple TV with identifier ${credentials.uniqueIdentifier}.`);
 
-    devices[0].openConnection(credentials).then(device => this.onDeviceConnected(deviceConfiguration, device), this.onDeviceConnectionFailed);
+    let device = devices[0];
+
+    device.openConnection(device.credentials).then(device => this.onDeviceConnected(deviceConfiguration, device), this.onDeviceConnectionFailed);
 
     this.debug("Scanning complete.");
   }
