@@ -1,6 +1,5 @@
-let AppleTv = require("node-appletv-x");
-let lodash = require("lodash");
-let Device = require("./device");
+const appleTv = require("node-appletv-x");
+const Device = require("./device");
 
 function Platform(log, config, api) {
   this.log = log;
@@ -17,7 +16,7 @@ function Platform(log, config, api) {
   this.configureAccessory = configureAccessory.bind(this);
   this.apiDidFinishLaunching = apiDidFinishLaunching.bind(this);
   this.onScanComplete = onScanComplete.bind(this);
-  this.registerDevice = registerDevice.bind(this);
+  this.scanForDevice = scanForDevice.bind(this);
   this.onDeviceConnected = onDeviceConnected.bind(this);
   this.onDeviceConnectionFailed = onDeviceConnectionFailed.bind(this);
 
@@ -60,30 +59,24 @@ function Platform(log, config, api) {
 
     this.debug("Scanning for Apple TVs...");
 
-    AppleTv.scan().then(this.onScanComplete);
+    config.devices.map(this.scanForDevice);
+  }
+
+  function scanForDevice(deviceConfiguration) {
+    let credentials = appletv.parseCredentials(deviceConfiguration.credentials);
+
+    this.debug(`Scanning for Apple TV with identifier ${credentials.uniqueIdentifier}.`);
+
+    appletv.scan(credentials.uniqueIdentifier).then(this.onScanComplete);
   }
 
   function onScanComplete(devices) {
-    this.debug(`Found ${devices.length} Apple TV devices.`);
+    this.debug(`Found Apple TV with identifier ${credentials.uniqueIdentifier}.`);
+    this.debug(`Attempting to connect to Apple TV with identifier ${credentials.uniqueIdentifier}.`);
 
-    lodash.each(this.config.devices, deviceConfiguration => this.registerDevice(deviceConfiguration, devices));
+    devices[0].openConnection(credentials).then(device => this.onDeviceConnected(deviceConfiguration, device), this.onDeviceConnectionFailed);
 
     this.debug("Scanning complete.");
-  }
-
-  function registerDevice(deviceConfiguration, devices) {
-    let credentials = AppleTv.parseCredentials(deviceConfiguration.credentials);
-    let device = lodash.find(devices, _device => _device.uid === credentials.uniqueIdentifier);
-
-    if (!device) {
-      this.debug(`Apple TV with id ${credentials.uniqueIdentifier} was not found.`);
-
-      return;
-    }
-
-    this.debug(`Connecting to Apple TV with id ${credentials.uniqueIdentifier}...`);
-
-    device.openConnection(credentials).then(device => this.onDeviceConnected(deviceConfiguration, device), this.onDeviceConnectionFailed);
   }
 
   function onDeviceConnected(deviceConfiguration, device) {
