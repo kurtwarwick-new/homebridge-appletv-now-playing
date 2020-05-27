@@ -16,7 +16,19 @@ class Platform {
         if (this.config && this.config.debug) {
             this.log(message);
         }
-    };
+    }
+
+    registerAccessories = accessories => {
+        this.api.registerPlatformAccessories(Platform.pluginName, Platform.platformName, accessories);
+    }
+
+    unregisterAccessories = accessories => {
+        this.api.unregisterPlatformAccessories(Platform.pluginName, Platform.platformName, accessories);
+    }
+
+    updateAccessories = accessories => {
+        this.api.updatePlatformAccessories(accessories);
+    }
 
     configureAccessory = accessory => {
         if (!accessory.context.uid) {
@@ -29,7 +41,7 @@ class Platform {
 
             this.debug(`Loaded cached accessory width id ${accessory.UUID}`);
         }
-    };
+    }
 
     cleanupAccessory = accessory => {
         let foundAccessory = this.config.devices.filter(deviceConfiguration => {
@@ -42,7 +54,7 @@ class Platform {
 
             this.unregisterAccessories([accessory]);
         }
-    };
+    }
 
     loadDevice = async deviceConfiguration => {
         let credentials = appletv.parseCredentials(deviceConfiguration.credentials);
@@ -60,7 +72,7 @@ class Platform {
         this.debug(`Loading acessory for ${connectedDevice.name} [${connectedDevice.uid}].`);
 
         this.devices.push(new Device(this, deviceConfiguration, connectedDevice));
-    };
+    }
 
     onApiDidFinishLaunching = () => {
         if (!this.config.devices) {
@@ -75,7 +87,7 @@ class Platform {
         this.debug("Loading configured Apple TVs...");
         
         this.config.devices.map(this.loadDevice);
-    };
+    }
 }
 
 Platform.pluginName = "homebridge-appletv-now-playing";
