@@ -22,9 +22,7 @@ module.exports = function Device(platform, config, device) {
         let accessory = deviceAccessories.find((_accessory) => _accessory.UUID === accessoryUid);
         let platformAccessories = [new this.platform.api.platformAccessory(this.config.name, accessoryUid)];
 
-        if (!!platformAccessories) {
-            this.platform.api.unregisterPlatformAccessories(platformAccessories);
-        }
+        this.platform.unregisterAccessories(platformAccessories);
 
         if (!accessory) {
             if (!accessory) {
