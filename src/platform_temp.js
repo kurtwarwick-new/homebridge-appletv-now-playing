@@ -44,7 +44,7 @@ class Platform {
         }
     };
 
-    loadDevice = deviceConfiguration => {
+    loadDevice = async deviceConfiguration => {
         let credentials = appletv.parseCredentials(deviceConfiguration.credentials);
 
         config.verbose && console.log(`Scanning for Apple TV [${credentials.uniqueIdentifier}].`);
