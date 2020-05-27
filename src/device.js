@@ -59,10 +59,12 @@ module.exports = function Device(platform, config, device) {
             .setCharacteristic(this.platform.api.hap.Characteristic.Manufacturer, "Apple")
             .setCharacteristic(this.platform.api.hap.Characteristic.Model, "Apple TV")
             .setCharacteristic(this.platform.api.hap.Characteristic.SerialNumber, this.device.uid);
+
+        this.platform.debug(`Information Service for accessory with id ${this.device.uid} configured.`);
     }
 
     function configureStateService(accessory) {
-        this.platform.debug(`Configuring the State Switch Service for accessory with id ${this.device.uid}.`);
+        this.platform.debug(`Configuring the State Service for accessory with id ${this.device.uid}.`);
 
         this.stateService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Switch);
 
@@ -84,6 +86,8 @@ module.exports = function Device(platform, config, device) {
 
         this.device.on("nowPlaying", this.onNowPlaying);
         this.device.on("supportedCommands", this.onSupportedCommands);
+
+        this.platform.debug(`State Service for accessory with id ${this.device.uid} configured.`);
     }
 
     function onDeviceInfo(message) {

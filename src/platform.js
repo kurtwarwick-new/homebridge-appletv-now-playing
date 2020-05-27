@@ -94,7 +94,7 @@ function Platform(log, config, api) {
             this.debug(`Found Apple TV ${device.name} [${device.uid}].`);
             this.debug(`Attempting to connect to Apple TV ${device.name} [${device.uid}].`);
 
-            device.openConnection(device.credentials).then((device) => this.onDeviceConnected(deviceConfiguration, device), this.onDeviceConnectionFailed);
+            device.openConnection(device.credentials).then(connectedDevice => this.onDeviceConnected(deviceConfiguration, connectedDevice), this.onDeviceConnectionFailed);
         } else {
             this.debug(`Unable to find Apple TV with identifier ${credentials.uniqueIdentifier}. Please try and pair with your device again.`);
         }
