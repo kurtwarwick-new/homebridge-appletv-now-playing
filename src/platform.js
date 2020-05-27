@@ -103,6 +103,7 @@ function Platform(log, config, api) {
     }
 
     function onDeviceConnected(deviceConfiguration, device) {
+        device.on("nowPlaying", message => this.debug(message));
         this.devices.push(new Device(this, deviceConfiguration, device));
 
         this.debug(`Connected to ${device.name} [${device.uid}].`);
