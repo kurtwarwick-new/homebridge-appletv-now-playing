@@ -48,13 +48,6 @@ $ node .\bin\cli.js
 
 Scanning for devices...
 These Apple TVs were found:
-        1 : Lounge [C8309D5A-XXXX-XXXX-XXXX-2F7F2E813680]
-
-Pair with Apple TV (enter index) :
-
-Scanning for devices...
-
-These Apple TVs were found:
 
         1 : Lounge [C8309D5A-XXXX-XXXX-XXXX-2F7F2E813680]
 
