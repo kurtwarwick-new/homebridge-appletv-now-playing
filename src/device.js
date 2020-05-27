@@ -103,6 +103,8 @@ module.exports = function Device(platform, config, device) {
             message.playbackState = message.playbackState[0].toUpperCase() + message.playbackState.substring(1).toLowerCase();
         }
 
+        this.platform.debug(`Received now playing information.`);
+
         this.stateService.getCharacteristic(Characteristics.State).updateValue(message && message.playbackState ? message.playbackState : "-");
         this.stateService.getCharacteristic(Characteristics.Type).updateValue(message ? (message.album && message.artist ? "Music" : "Video") : "-");
         this.stateService.getCharacteristic(Characteristics.Title).updateValue(message && message.title ? message.title : "-");
