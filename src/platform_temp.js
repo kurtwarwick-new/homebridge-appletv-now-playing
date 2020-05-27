@@ -47,17 +47,17 @@ class Platform {
     loadDevice = async deviceConfiguration => {
         let credentials = appletv.parseCredentials(deviceConfiguration.credentials);
 
-        config.verbose && console.log(`Scanning for Apple TV [${credentials.uniqueIdentifier}].`);
+        this.debug(`Scanning for Apple TV [${credentials.uniqueIdentifier}].`);
 
         let devices = await appletv.scan(credentials.uniqueIdentifier);
 
-        config.verbose && console.log(`Apple TV [${credentials.uniqueIdentifier}] found.`);
-        config.verbose && console.log(`Attempting to connect to Apple TV [${credentials.uniqueIdentifier}].`);
+        this.debug(`Apple TV [${credentials.uniqueIdentifier}] found.`);
+        this.debug(`Attempting to connect to Apple TV [${credentials.uniqueIdentifier}].`);
 
         let connectedDevice = await devices[0].openConnection(credentials);
 
-        config.verbose && console.log(`Connected to ${connectedDevice.name} [${connectedDevice.uid}].`);
-        config.verbose && console.log(`Loading acessory for ${connectedDevice.name} [${connectedDevice.uid}].`);
+        this.debug(`Connected to ${connectedDevice.name} [${connectedDevice.uid}].`);
+        this.debug(`Loading acessory for ${connectedDevice.name} [${connectedDevice.uid}].`);
 
         this.devices.push(new Device(this, deviceConfiguration, connectedDevice));
     };
