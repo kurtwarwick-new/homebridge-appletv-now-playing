@@ -43,7 +43,7 @@ In order to retrieve credentials for your Apple TV, please follow these step
 
 Example:
 
-```
+```shell
 /path/to/homebridge-appletv-now-playing $ node .\bin\cli.js
 
 Scanning for devices...
