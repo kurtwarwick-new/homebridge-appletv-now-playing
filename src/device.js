@@ -121,8 +121,8 @@ class Device {
         this.stateService.getCharacteristic(Characteristics.Album).updateValue(message && message.album ? message.album : "-");
         this.stateService.getCharacteristic(Characteristics.Application).updateValue(message && message.appDisplayName ? message.appDisplayName : "-");
         this.stateService.getCharacteristic(Characteristics.ApplicationBundleId).updateValue(message && message.appBundleIdentifier ? message.appBundleIdentifier : "-");
-        this.stateService.getCharacteristic(Characteristics.ElapsedTime).updateValue(message && message.elapsedTime > 0 ? message.elapsedTime : "-");
-        this.stateService.getCharacteristic(Characteristics.Duration).updateValue(message && message.duration > 0 ? message.duration : "-");
+        this.stateService.getCharacteristic(Characteristics.ElapsedTime).updateValue(message && message.elapsedTime > 0 ? Math.roung(message.elapsedTime) : "-");
+        this.stateService.getCharacteristic(Characteristics.Duration).updateValue(message && message.duration > 0 ? Math.round(message.duration) : "-");
         this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(message && message.playbackState === "Playing");
     }
 }
