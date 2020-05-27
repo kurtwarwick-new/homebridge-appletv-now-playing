@@ -90,8 +90,8 @@ module.exports = function Device(platform, config, device) {
 
             !this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.Active) && this.stateService.addCharacteristic(this.platform.api.hap.Characteristic.Active);
 
-            this.device.on("nowPlaying", this.onNowPlaying);
-            this.device.on("supportedCommands", this.onSupportedCommands);
+            //this.device.on("nowPlaying", this.onNowPlaying);
+            //this.device.on("supportedCommands", this.onSupportedCommands);
 
             this.platform.debug(`State Service for accessory with id ${this.device.uid} configured.`);
         } catch (error) {
