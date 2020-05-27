@@ -20,9 +20,6 @@ module.exports = function Device(platform, config, device) {
         let accessoryUid = this.platform.api.hap.uuid.generate(`${this.device.uid}_apple_tv`);
         let deviceAccessories = this.platform.accessories.filter((accessory) => accessory.context.uid === this.device.uid);
         let accessory = deviceAccessories.find((_accessory) => _accessory.UUID === accessoryUid);
-        let platformAccessories = [new this.platform.api.platformAccessory(this.config.name, accessoryUid)];
-
-        this.platform.unregisterAccessories(platformAccessories);
 
         if (!accessory) {
             if (!accessory) {

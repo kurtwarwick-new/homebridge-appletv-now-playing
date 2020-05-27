@@ -19,6 +19,7 @@ function Platform(log, config, api) {
     this.scanForDevice = scanForDevice.bind(this);
     this.onDeviceConnected = onDeviceConnected.bind(this);
     this.onDeviceConnectionFailed = onDeviceConnectionFailed.bind(this);
+    this.cleanupAccessory = cleanupAccessory.bind(this);
 
     function registerAccessories(accessories) {
         this.api.registerPlatformAccessories(Platform.pluginName, Platform.platformName, accessories);
@@ -57,9 +58,25 @@ function Platform(log, config, api) {
             return;
         }
 
+        this.debug("Cleaning up orphaned accessories...");
+
+        this.accessories.map(this.cleanupAccessory);
+
         this.debug("Scanning for Apple TVs...");
 
-        config.devices.map(this.scanForDevice);
+        this.config.devices.map(this.scanForDevice);
+    }
+
+    function cleanupAccessory(accessory) {
+        let foundAccessory = this.config.devices.filter(deviceConfiguration => {
+          let credentials = appletv.parseCredentials(deviceConfiguration.credentials);
+          accessory.UUID === `${credentials.uniqueIdentifier}_apple_tv`;
+        });
+
+        if(!foundAccessory) {
+          this.debug(`Removing orphaned accessory [${accessory.uid}].`);
+          this.unregisterAccessories([accessory]);
+        }
     }
 
     function scanForDevice(deviceConfiguration) {
