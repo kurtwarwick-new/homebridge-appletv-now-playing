@@ -1,7 +1,7 @@
 const appletv = require("node-appletv-x");
 const Device = require("./device");
 
-async function Platform(log, config, api) {
+module.exports = (log, config, api) => {
     this.log = log;
     this.config = config;
     this.api = api;
@@ -66,7 +66,7 @@ async function Platform(log, config, api) {
 
         // this.config.devices.map(await this.scanForDevice);
 
-        config.devices.map(async (devicesConfiguration) => {
+        this.config.devices.map(async (devicesConfiguration) => {
             try {
                 let credentials = appletv.parseCredentials(devicesConfiguration.credentials);
 
@@ -152,7 +152,7 @@ async function Platform(log, config, api) {
     this.api.on("didFinishLaunching", this.apiDidFinishLaunching);
 }
 
-Platform.pluginName = "homebridge-appletv-now-playing";
-Platform.platformName = "AppleTvNowPlayingPlatform";
+// Platform.pluginName = "homebridge-appletv-now-playing";
+// Platform.platformName = "AppleTvNowPlayingPlatform";
 
-module.exports = Platform;
+// module.exports = Platform;
