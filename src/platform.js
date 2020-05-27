@@ -67,10 +67,10 @@ function Platform(log, config, api) {
 
         this.debug(`Scanning for Apple TV with identifier ${credentials.uniqueIdentifier}.`);
 
-        appletv.scan(credentials.uniqueIdentifier).then((devices) => this.onScanComplete(devices, credentials));
+        appletv.scan(credentials.uniqueIdentifier).then((devices) => this.onScanComplete(devices, credentials, deviceConfiguration));
     }
 
-    function onScanComplete(devices, credentials) {
+    function onScanComplete(devices, credentials, deviceConfiguration) {
         if (devices.length) {
             let device = devices[0];
 
