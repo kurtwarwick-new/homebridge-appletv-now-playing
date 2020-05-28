@@ -1,7 +1,7 @@
 {
   "name": "homebridge-appletv-now-playing",
-  "version": "0.1.80",
-  "description": "[WIP!! Please don't use just yet] A Homebridge plugin to expose an Apple TV device as a Television, and it's now playign information as characteristics.",
+  "version": "0.1.81",
+  "description": "A homebridge that exposes Apple TV devices to Homekit, along with it's current Power State, Playback State and Now Playing Information.",
   "license": "MIT",
   "keywords": [
     "homebridge-plugin",
