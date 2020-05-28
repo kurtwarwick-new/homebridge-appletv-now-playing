@@ -1,6 +1,6 @@
 # Homebridge Apple TV - Now Playing
 
-A [homebridge](https://github.com/nfarina/homebridge) that exposes Apple TV devices to Homekit, along with it's current Power State, Playback State and Now Playing Information.
+A [homebridge](https://github.com/nfarina/homebridge) plugin that exposes Apple TV devices to Homekit, along with it's current Power State, Playback State and Now Playing Information.
 
 ## Overview
 
