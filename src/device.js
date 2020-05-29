@@ -20,7 +20,7 @@ class Device {
             this.platform.debug(`Creating accessory (${this.device.name} [${this.device.uid}]).`);
 
             accessory = new this.platform.api.platformAccessory(this.config.name, accessoryUid, this.platform.api.hap.Accessory.Categories.TELEVISION);
-            
+
             accessory.displayName = this.config.name;
             accessory.context.uid = this.device.uid;
 
@@ -29,6 +29,7 @@ class Device {
             this.platform.debug(`Updating accessory (${this.device.name} [${this.device.uid}]).`);
 
             accessory.displayName = this.config.name;
+            accessory.name = this.config.name;
 
             this.platform.updateAccessories([accessory]);
         }
@@ -54,7 +55,8 @@ class Device {
             accessoryInformationService
                 .setCharacteristic(this.platform.api.hap.Characteristic.Manufacturer, "Apple")
                 .setCharacteristic(this.platform.api.hap.Characteristic.Model, "Apple TV")
-                .setCharacteristic(this.platform.api.hap.Characteristic.SerialNumber, this.device.uid);
+                .setCharacteristic(this.platform.api.hap.Characteristic.SerialNumber, this.device.uid)
+                .setCharacteristic(this.platform.api.hap.Characteristic.Name, this.config.name);
 
             this.platform.debug(`Information service for accessory (${this.device.name} [${this.device.uid}]) configured.`);
         } catch (error) {
