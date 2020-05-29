@@ -8,6 +8,8 @@ This plugin exposes the Apple TV as a switch device, with the switch power state
 
 The media type is calculated by checking artist and album information. This characterist comes in handy if you would like to setup automations that dim light for only videos and not music.
 
+** Note: ** The now playing information are exposed as custom charactersitics, which means that the Apple Home App will not be able to read these. You will need to use an app such as [Home+ 4]:https://apps.apple.com/us/app/home-4/id995994352 or [Eve for Homekit]:https://apps.apple.com/us/app/eve-for-homekit/id917695792.
+
 ## Sample Configuration
 
 ```yaml

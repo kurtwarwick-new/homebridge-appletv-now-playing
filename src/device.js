@@ -17,32 +17,32 @@ class Device {
         let accessory = deviceAccessories.find((_accessory) => _accessory.UUID === accessoryUid);
 
         if (!accessory) {
-            if (!accessory) {
-                this.platform.debug(`Creating accessory (${this.device.name} [${this.device.uid}]).`);
+            this.platform.debug(`Creating accessory (${this.device.name} [${this.device.uid}]).`);
 
-                accessory = new this.platform.api.platformAccessory(this.config.name, accessoryUid, this.platform.api.hap.Accessory.Categories.TELEVISION);
-                accessory.context.uid = this.device.uid;
+            accessory = new this.platform.api.platformAccessory(this.config.name, accessoryUid, this.platform.api.hap.Accessory.Categories.TELEVISION);
 
-                this.platform.registerAccessories([accessory]);
-            }
-            else {
-                this.platform.debug(`Updating accessory (${this.device.name} [${this.device.uid}]).`);
+            accessory.displayName = this.config.name;
+            accessory.context.uid = this.device.uid;
 
-                accessory.displayName = this.config.name;
+            this.platform.registerAccessories([accessory]);
+        } else {
+            this.platform.debug(`Updating accessory (${this.device.name} [${this.device.uid}]).`);
 
-                this.platform.updateAccessories([accessory]);
-            }
+            accessory.displayName = this.config.name;
+            accessory.name = this.config.name;
 
-            this.platform.debug(`Accessory (${this.device.name} [${this.device.uid}]) ready.`);
+            this.platform.updateAccessories([accessory]);
         }
+
+        this.platform.debug(`Accessory (${this.device.name} [${this.device.uid}]) ready.`);
 
         this.configureInformationService(accessory);
         this.configureStateService(accessory);
 
         setInterval(() => this.device.sendIntroduction().then(this.onDeviceInfo), 5000);
-    }
+    };
 
-    configureInformationService = accessory => {
+    configureInformationService = (accessory) => {
         this.platform.debug(`Configuring the information service for accessory (${this.device.name} [${this.device.uid}]).`);
 
         try {
@@ -55,17 +55,17 @@ class Device {
             accessoryInformationService
                 .setCharacteristic(this.platform.api.hap.Characteristic.Manufacturer, "Apple")
                 .setCharacteristic(this.platform.api.hap.Characteristic.Model, "Apple TV")
-                .setCharacteristic(this.platform.api.hap.Characteristic.SerialNumber, this.device.uid);
+                .setCharacteristic(this.platform.api.hap.Characteristic.SerialNumber, this.device.uid)
+                .setCharacteristic(this.platform.api.hap.Characteristic.Name, this.config.name);
 
             this.platform.debug(`Information service for accessory (${this.device.name} [${this.device.uid}]) configured.`);
-        }
-        catch (error) {
+        } catch (error) {
             this.platform.debug(`Information service for accessory (${this.device.name} [${this.device.uid}]) could not be configured.`);
             this.platform.debug(error);
         }
-    }
-    
-    configureStateService = accessory => {
+    };
+
+    configureStateService = (accessory) => {
         this.platform.debug(`Configuring the state service for accessory (${this.device.name} [${this.device.uid}]).`);
 
         try {
@@ -90,26 +90,25 @@ class Device {
             this.device.on("supportedCommands", this.onSupportedCommands);
 
             this.platform.debug(`State service for accessory (${this.device.name} [${this.device.uid}]) configured.`);
-        }
-        catch (error) {
+        } catch (error) {
             this.platform.debug(`State service for accessory (${this.device.name} [${this.device.uid}]) could not be configured.`);
             this.platform.debug(error);
         }
-    }
-    
-    onDeviceInfo = message => {
-        this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.On).updateValue(message.payload.logicalDeviceCount == 1);
-    }
+    };
 
-    onSupportedCommands = message => {
+    onDeviceInfo = (message) => {
+        this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.On).updateValue(message.payload.logicalDeviceCount == 1);
+    };
+
+    onSupportedCommands = (message) => {
         if (!!message) {
             if (!message.length) {
                 this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(false);
             }
         }
-    }
+    };
 
-    onNowPlaying = message => {
+    onNowPlaying = (message) => {
         if (message && message.playbackState && message.playbackState.length > 1) {
             message.playbackState = message.playbackState[0].toUpperCase() + message.playbackState.substring(1).toLowerCase();
         }
@@ -124,7 +123,7 @@ class Device {
         this.stateService.getCharacteristic(Characteristics.ElapsedTime).updateValue(message && message.elapsedTime > 0 ? Math.round(message.elapsedTime) : "-");
         this.stateService.getCharacteristic(Characteristics.Duration).updateValue(message && message.duration > 0 ? Math.round(message.duration) : "-");
         this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(message && message.playbackState === "Playing");
-    }
+    };
 }
 
 module.exports = Device;
