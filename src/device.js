@@ -116,7 +116,7 @@ class Device {
         }
 
         this.power = value;
-        this.powerTimer = setTimeout(() => this.device.sendIntroduction().then(this.onDeviceInfo), 5000);
+        this.powerTimer = setTimeout(() => this.device.sendIntroduction().then(this.onDeviceInfo), 10000);
 
         next();
     }
