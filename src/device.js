@@ -10,6 +10,7 @@ class Device {
         this.config = config;
         this.device = device;
         this.power = false;
+        this.powerTimer = null;
 
         this.configureAccessory();
     }
@@ -42,7 +43,7 @@ class Device {
         this.configureInformationService(accessory);
         this.configureStateService(accessory);
 
-        setInterval(() => this.device.sendIntroduction().then(this.onDeviceInfo), 5000);
+        this.powerTimer = setTimeout(() => this.device.sendIntroduction().then(this.onDeviceInfo), 5000);
     };
 
     configureInformationService = (accessory) => {
@@ -102,6 +103,8 @@ class Device {
     };
 
     onPower = async (value, next) => {
+        clearTimeout(this.powerTimer);
+
         this.platform.debug(`Turning accessory (${this.device.name} [${this.device.uid}]) ${value ? 'on' : 'off'}.`);
 
         if(this.power) {
@@ -113,6 +116,7 @@ class Device {
         }
 
         this.power = value;
+        this.powerTimer = setTimeout(() => this.device.sendIntroduction().then(this.onDeviceInfo), 5000);
 
         next();
     }
@@ -120,6 +124,8 @@ class Device {
     onDeviceInfo = (message) => {
         this.power = message.payload.logicalDeviceCount == 1;
         this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.On).updateValue(this.power);
+
+        this.powerTimer = setTimeout(() => this.device.sendIntroduction().then(this.onDeviceInfo), 5000);
     };
 
     onSupportedCommands = (message) => {
