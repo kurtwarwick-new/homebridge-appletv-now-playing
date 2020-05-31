@@ -104,7 +104,7 @@ class Device {
         next();
     }
 
-    onPower = (value, next) => {
+    onState = (value, next) => {
         this.platform.debug(`Received STATE state... ${value}`);
         next();
     }
