@@ -1,3 +1,5 @@
+const appletv = require("node-appletv-x");
+
 let Characteristics;
 
 class Device {
@@ -7,6 +9,7 @@ class Device {
         this.platform = platform;
         this.config = config;
         this.device = device;
+        this.power = false;
 
         this.configureAccessory();
     }
@@ -87,7 +90,6 @@ class Device {
             !this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.Active) && this.stateService.addCharacteristic(this.platform.api.hap.Characteristic.Active);
 
             this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.On).on("set", this.onPower);
-            this.stateService.getCharacteristic(Characteristics.State).on("set", this.onState);
 
             this.device.on("nowPlaying", this.onNowPlaying);
             this.device.on("supportedCommands", this.onSupportedCommands);
@@ -100,17 +102,19 @@ class Device {
     };
 
     onPower = (value, next) => {
-        this.platform.debug(`Received ON state... ${value}`);
-        next();
-    }
+        this.platform.debug(`Turning accessory (${this.device.name} [${this.device.uid}]) ${value ? 'on' : 'off'}.`);
+        this.power = value;
 
-    onState = (value, next) => {
-        this.platform.debug(`Received STATE state... ${value}`);
+        this.power ?
+            this.device.sendKeyCommand(appletv.Key.LongTv) & this.device.sendKeyCommand(appletv.Key.Select) :
+            this.device.sendKeyCommand(appletv.Key.Tv)
+
         next();
     }
 
     onDeviceInfo = (message) => {
-        this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.On).updateValue(message.payload.logicalDeviceCount == 1);
+        this.power = message.payload.logicalDeviceCount == 1;
+        this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.On).updateValue(this.power);
     };
 
     onSupportedCommands = (message) => {
