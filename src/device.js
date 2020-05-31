@@ -86,6 +86,10 @@ class Device {
             !this.stateService.getCharacteristic(Characteristics.Duration) && this.stateService.addCharacteristic(Characteristics.Duration);
             !this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.Active) && this.stateService.addCharacteristic(this.platform.api.hap.Characteristic.Active);
 
+            this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.On).on("set", (value, callback, context) => {
+                this.platform.debug(`Received ON state... ${value}`);
+            });
+
             this.device.on("nowPlaying", this.onNowPlaying);
             this.device.on("supportedCommands", this.onSupportedCommands);
 
