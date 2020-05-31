@@ -101,13 +101,18 @@ class Device {
         }
     };
 
-    onPower = (value, next) => {
+    onPower = async (value, next) => {
         this.platform.debug(`Turning accessory (${this.device.name} [${this.device.uid}]) ${value ? 'on' : 'off'}.`);
-        this.power = value;
 
-        this.power ?
-            this.device.sendKeyCommand(appletv.Key.LongTv) & this.device.sendKeyCommand(appletv.Key.Select) :
-            this.device.sendKeyCommand(appletv.Key.Tv)
+        if(this.power) {
+            await this.device.sendKeyCommand(appletv.AppleTV.Key.LongTv);
+            await this.device.sendKeyCommand(appletv.AppleTV.Key.Select);
+        }
+        else {
+            await this.device.sendKeyCommand(appletv.AppleTV.Key.Tv);
+        }
+
+        this.power = value;
 
         next();
     }
