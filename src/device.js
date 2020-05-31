@@ -87,6 +87,7 @@ class Device {
             !this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.Active) && this.stateService.addCharacteristic(this.platform.api.hap.Characteristic.Active);
 
             this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.On).on("set", this.onPower);
+            this.stateService.getCharacteristic(Characteristics.State).on("set", this.onState);
 
             this.device.on("nowPlaying", this.onNowPlaying);
             this.device.on("supportedCommands", this.onSupportedCommands);
@@ -100,6 +101,11 @@ class Device {
 
     onPower = (value, next) => {
         this.platform.debug(`Received ON state... ${value}`);
+        next();
+    }
+
+    onPower = (value, next) => {
+        this.platform.debug(`Received STATE state... ${value}`);
         next();
     }
 
