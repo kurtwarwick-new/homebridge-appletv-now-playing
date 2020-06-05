@@ -163,10 +163,12 @@ class Device {
         this.platform.debug(`Turning accessory (${this.device.name} [${this.device.uid}]) ${value ? "on" : "off"}.`);
 
         if (this.power) {
-            await this.device.sendKeyCommand(appletv.AppleTV.Key.LongTv);
-            await this.device.sendKeyCommand(appletv.AppleTV.Key.Select);
+            // await this.device.sendKeyCommand(appletv.AppleTV.Key.LongTv);
+            // await this.device.sendKeyCommand(appletv.AppleTV.Key.Select);
+            await this.device.sendKeyCommand(appletv.AppleTV.Key.Suspend);
         } else {
-            await this.device.sendKeyCommand(appletv.AppleTV.Key.Tv);
+            await this.device.sendKeyPressAndRelease(1, 0x83);
+            //await this.device.sendKeyCommand(appletv.AppleTV.Key.Tv);
         }
 
         this.power = value;
