@@ -42,6 +42,7 @@ class Device {
 
         this.configureInformationService(accessory);
         this.configureStateService(accessory);
+        this.configureTVService(accessory);
 
         this.powerTimer = setTimeout(() => this.device.sendIntroduction().then(this.onDeviceInfo), 5000);
     };
