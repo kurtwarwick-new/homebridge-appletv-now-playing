@@ -76,7 +76,7 @@ class Device {
         try {
             let tvService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Tv);
 
-            if (!this.stateService) {
+            if (!tvService) {
                 tvService = accessory.addService(this.platform.api.hap.Service.Tv);
             }
 
