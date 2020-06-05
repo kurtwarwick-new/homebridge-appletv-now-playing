@@ -27,6 +27,7 @@ class Device {
 
             accessory.displayName = this.config.name;
             accessory.context.uid = this.device.uid;
+            accessory.category = Categories.TELEVISION;
 
             this.platform.registerAccessories([accessory]);
         } else {
@@ -34,6 +35,7 @@ class Device {
 
             accessory.displayName = this.config.name;
             accessory.name = this.config.name;
+            accessory.category = Categories.TELEVISION;
 
             this.platform.updateAccessories([accessory]);
         }
@@ -86,6 +88,23 @@ class Device {
                 .setCharacteristic(this.platform.api.hap.Characteristic.SerialNumber, this.device.uid)
                 .setCharacteristic(this.platform.api.hap.Characteristic.Name, this.config.name)
                 .setCharacteristic(this.platform.api.hap.Characteristic.ConfiguredName, this.config.name);
+
+            this.speakerService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.TelevisionSpeaker);
+
+            if (!this.speakerService) {
+                this.speakerService = accessory.addService(this.platform.api.hap.Service.TelevisionSpeaker);
+            }
+
+            this.speakerService
+                .setCharacteristic(Characteristic.Active, Characteristic.Active.ACTIVE)
+                .setCharacteristic(Characteristic.VolumeControlType, Characteristic.VolumeControlType.ABSOLUTE);
+            this.speakerService.getCharacteristic(Characteristic.VolumeSelector).on("set", this.setVolumeSelector.bind(this));
+            this.speakerService.getCharacteristic(Characteristic.Volume).on("get", this.getVolume.bind(this)).on("set", this.setVolume.bind(this));
+            this.speakerService.getCharacteristic(Characteristic.Mute).on("get", this.getMute.bind(this)).on("set", this.setMute.bind(this));
+
+            accessory.addService(this.speakerService);
+            
+            this.tvService.addLinkedService(this.speakerService);
 
             this.platform.debug(`TV service for accessory (${this.device.name} [${this.device.uid}]) configured.`);
         } catch (error) {
@@ -148,6 +167,7 @@ class Device {
     onDeviceInfo = (message) => {
         this.power = message.payload.logicalDeviceCount == 1;
         this.stateService && this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.On).updateValue(this.power);
+        this.tvService && this.tvService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(this.power);
 
         this.powerTimer = setTimeout(() => this.device.sendIntroduction().then(this.onDeviceInfo), 5000);
     };
@@ -165,24 +185,29 @@ class Device {
             message.playbackState = message.playbackState[0].toUpperCase() + message.playbackState.substring(1).toLowerCase();
         }
 
-        this.tvService.getCharacteristic(Characteristics.CurrentMediaState ).updateValue(message && (message.playbackState === "playing" ? 
-            Characteristic.CurrentMediaState.PLAY : 
-            message.playbackState === "paused" ? 
-                Characteristic.CurrentMediaState.PAUSE :
-                Characteristic.CurrentMediaState.STOP));
+        this.tvService
+            .getCharacteristic(Characteristics.CurrentMediaState)
+            .updateValue(
+                message &&
+                    (message.playbackState === "playing"
+                        ? Characteristic.CurrentMediaState.PLAY
+                        : message.playbackState === "paused"
+                        ? Characteristic.CurrentMediaState.PAUSE
+                        : Characteristic.CurrentMediaState.STOP)
+            );
 
-        this.tvService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(message && message.playbackState === "Playing");
-
-        this.stateService.getCharacteristic(Characteristics.State).updateValue(message && message.playbackState ? message.playbackState : "-");
-        this.stateService.getCharacteristic(Characteristics.Type).updateValue(message ? (message.album && message.artist ? "Music" : "Video") : "-");
-        this.stateService.getCharacteristic(Characteristics.Title).updateValue(message && message.title ? message.title : "-");
-        this.stateService.getCharacteristic(Characteristics.Artist).updateValue(message && message.artist ? message.artist : "-");
-        this.stateService.getCharacteristic(Characteristics.Album).updateValue(message && message.album ? message.album : "-");
-        this.stateService.getCharacteristic(Characteristics.Application).updateValue(message && message.appDisplayName ? message.appDisplayName : "-");
-        this.stateService.getCharacteristic(Characteristics.ApplicationBundleId).updateValue(message && message.appBundleIdentifier ? message.appBundleIdentifier : "-");
-        this.stateService.getCharacteristic(Characteristics.ElapsedTime).updateValue(message && message.elapsedTime > 0 ? Math.round(message.elapsedTime) : "-");
-        this.stateService.getCharacteristic(Characteristics.Duration).updateValue(message && message.duration > 0 ? Math.round(message.duration) : "-");
-        this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(message && message.playbackState === "Playing");
+        this.stateService && this.stateService.getCharacteristic(Characteristics.State).updateValue(message && message.playbackState ? message.playbackState : "-");
+        this.stateService && this.stateService.getCharacteristic(Characteristics.Type).updateValue(message ? (message.album && message.artist ? "Music" : "Video") : "-");
+        this.stateService && this.stateService.getCharacteristic(Characteristics.Title).updateValue(message && message.title ? message.title : "-");
+        this.stateService && this.stateService.getCharacteristic(Characteristics.Artist).updateValue(message && message.artist ? message.artist : "-");
+        this.stateService && this.stateService.getCharacteristic(Characteristics.Album).updateValue(message && message.album ? message.album : "-");
+        this.stateService && this.stateService.getCharacteristic(Characteristics.Application).updateValue(message && message.appDisplayName ? message.appDisplayName : "-");
+        this.stateService &&
+            this.stateService.getCharacteristic(Characteristics.ApplicationBundleId).updateValue(message && message.appBundleIdentifier ? message.appBundleIdentifier : "-");
+        this.stateService &&
+            this.stateService.getCharacteristic(Characteristics.ElapsedTime).updateValue(message && message.elapsedTime > 0 ? Math.round(message.elapsedTime) : "-");
+        this.stateService && this.stateService.getCharacteristic(Characteristics.Duration).updateValue(message && message.duration > 0 ? Math.round(message.duration) : "-");
+        this.stateService && this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(message && message.playbackState === "Playing");
     };
 }
 
