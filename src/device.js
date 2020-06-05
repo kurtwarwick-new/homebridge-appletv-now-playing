@@ -69,6 +69,30 @@ class Device {
         }
     };
 
+    configureTVService = (accessory) => {
+        this.platform.debug(`Configuring the TV service for accessory (${this.device.name} [${this.device.uid}]).`);
+
+        try {
+            let tvService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Tv);
+
+            if (!this.stateService) {
+                tvService = accessory.addService(this.platform.api.hap.Service.Tv);
+            }
+
+            tvService
+                .setCharacteristic(this.platform.api.hap.Characteristic.Manufacturer, "Apple")
+                .setCharacteristic(this.platform.api.hap.Characteristic.Model, "Apple TV")
+                .setCharacteristic(this.platform.api.hap.Characteristic.SerialNumber, this.device.uid)
+                .setCharacteristic(this.platform.api.hap.Characteristic.Name, this.config.name)
+                .setCharacteristic(this.platform.api.hap.Characteristic.ConfiguredName, this.config.name);
+
+            this.platform.debug(`TV service for accessory (${this.device.name} [${this.device.uid}]) configured.`);
+        } catch (error) {
+            this.platform.debug(`TV service for accessory (${this.device.name} [${this.device.uid}]) could not be configured.`);
+            this.platform.debug(error);
+        }
+    };
+
     configureStateService = (accessory) => {
         this.platform.debug(`Configuring the state service for accessory (${this.device.name} [${this.device.uid}]).`);
 
@@ -105,13 +129,12 @@ class Device {
     onPower = async (value, next) => {
         clearTimeout(this.powerTimer);
 
-        this.platform.debug(`Turning accessory (${this.device.name} [${this.device.uid}]) ${value ? 'on' : 'off'}.`);
+        this.platform.debug(`Turning accessory (${this.device.name} [${this.device.uid}]) ${value ? "on" : "off"}.`);
 
-        if(this.power) {
+        if (this.power) {
             await this.device.sendKeyCommand(appletv.AppleTV.Key.LongTv);
             await this.device.sendKeyCommand(appletv.AppleTV.Key.Select);
-        }
-        else {
+        } else {
             await this.device.sendKeyCommand(appletv.AppleTV.Key.Tv);
         }
 
@@ -119,7 +142,7 @@ class Device {
         this.powerTimer = setTimeout(() => this.device.sendIntroduction().then(this.onDeviceInfo), 10000);
 
         next();
-    }
+    };
 
     onDeviceInfo = (message) => {
         this.power = message.payload.logicalDeviceCount == 1;
