@@ -100,8 +100,6 @@ class Device {
                 .setCharacteristic(this.platform.api.hap.Characteristic.VolumeControlType, this.platform.api.hap.Characteristic.VolumeControlType.RELATIVE_WITH_CURRENT);
             this.speakerService.getCharacteristic(this.platform.api.hap.Characteristic.VolumeSelector).on("set", this.onVolumeSelector);
 
-            accessory.addService(this.speakerService);
-
             this.tvService.addLinkedService(this.speakerService);
 
             this.platform.debug(`TV service for accessory (${this.device.name} [${this.device.uid}]) configured.`);
