@@ -27,7 +27,6 @@ class Device {
 
             accessory.displayName = this.config.name;
             accessory.context.uid = this.device.uid;
-            accessory.category = Categories.TELEVISION;
 
             this.platform.registerAccessories([accessory]);
         } else {
@@ -35,7 +34,6 @@ class Device {
 
             accessory.displayName = this.config.name;
             accessory.name = this.config.name;
-            accessory.category = Categories.TELEVISION;
 
             this.platform.updateAccessories([accessory]);
         }
@@ -103,7 +101,7 @@ class Device {
             this.speakerService.getCharacteristic(Characteristic.Mute).on("get", this.getMute.bind(this)).on("set", this.setMute.bind(this));
 
             accessory.addService(this.speakerService);
-            
+
             this.tvService.addLinkedService(this.speakerService);
 
             this.platform.debug(`TV service for accessory (${this.device.name} [${this.device.uid}]) configured.`);
