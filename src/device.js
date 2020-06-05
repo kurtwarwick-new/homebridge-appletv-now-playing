@@ -147,7 +147,7 @@ class Device {
 
     onDeviceInfo = (message) => {
         this.power = message.payload.logicalDeviceCount == 1;
-        this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.On).updateValue(this.power);
+        this.stateService && this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.On).updateValue(this.power);
 
         this.powerTimer = setTimeout(() => this.device.sendIntroduction().then(this.onDeviceInfo), 5000);
     };
