@@ -87,6 +87,8 @@ class Device {
                 .setCharacteristic(this.platform.api.hap.Characteristic.Name, this.config.name)
                 .setCharacteristic(this.platform.api.hap.Characteristic.ConfiguredName, this.config.name);
 
+            this.tvService.getCharacteristic(this.platform.api.hap.Characteristic.Active).on("set", this.onPower);
+
             this.speakerService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.TelevisionSpeaker);
 
             if (!this.speakerService) {
@@ -94,11 +96,9 @@ class Device {
             }
 
             this.speakerService
-                .setCharacteristic(Characteristic.Active, Characteristic.Active.ACTIVE)
-                .setCharacteristic(Characteristic.VolumeControlType, Characteristic.VolumeControlType.ABSOLUTE);
-            this.speakerService.getCharacteristic(Characteristic.VolumeSelector).on("set", this.setVolumeSelector.bind(this));
-            this.speakerService.getCharacteristic(Characteristic.Volume).on("get", this.getVolume.bind(this)).on("set", this.setVolume.bind(this));
-            this.speakerService.getCharacteristic(Characteristic.Mute).on("get", this.getMute.bind(this)).on("set", this.setMute.bind(this));
+                .setCharacteristic(this.platform.api.hap.Characteristic.Active, this.platform.api.hap.Characteristic.Active.ACTIVE)
+                .setCharacteristic(this.platform.api.hap.Characteristic.VolumeControlType, this.platform.api.hap.Characteristic.VolumeControlType.RELATIVE_WITH_CURRENT);
+            this.speakerService.getCharacteristic(this.platform.api.hap.Characteristic.VolumeSelector).on("set", this.onVolumeSelector);
 
             accessory.addService(this.speakerService);
 
@@ -143,6 +143,21 @@ class Device {
             this.platform.debug(error);
         }
     };
+
+    onVolumeSelector = async (value, next) => {
+		if (this.power) {
+			switch (state) {
+				case this.platform.api.hap.Characteristic.VolumeSelector.INCREMENT:
+					await this.device.sendKeyPressAndRelease(12, 0xE9);
+					break;
+				case this.platform.api.hap.Characteristic.VolumeSelector.DECREMENT:
+                    await this.device.sendKeyPressAndRelease(12, 0xEA)
+					break;
+            }
+        }
+        
+        next();
+	}
 
     onPower = async (value, next) => {
         clearTimeout(this.powerTimer);
