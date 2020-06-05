@@ -41,7 +41,7 @@ class Device {
         this.platform.debug(`Accessory (${this.device.name} [${this.device.uid}]) ready.`);
 
         this.configureInformationService(accessory);
-        this.configureStateService(accessory);
+        //this.configureStateService(accessory);
         this.configureTVService(accessory);
 
         this.powerTimer = setTimeout(() => this.device.sendIntroduction().then(this.onDeviceInfo), 5000);
@@ -74,13 +74,13 @@ class Device {
         this.platform.debug(`Configuring the TV service for accessory (${this.device.name} [${this.device.uid}]).`);
 
         try {
-            let tvService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Television);
+            this.tvService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Television);
 
             if (!tvService) {
-                tvService = accessory.addService(this.platform.api.hap.Service.Television);
+                this.tvService = accessory.addService(this.platform.api.hap.Service.Television);
             }
 
-            tvService
+            this.tvService
                 .setCharacteristic(this.platform.api.hap.Characteristic.Manufacturer, "Apple")
                 .setCharacteristic(this.platform.api.hap.Characteristic.Model, "Apple TV")
                 .setCharacteristic(this.platform.api.hap.Characteristic.SerialNumber, this.device.uid)
@@ -164,6 +164,14 @@ class Device {
         if (message && message.playbackState && message.playbackState.length > 1) {
             message.playbackState = message.playbackState[0].toUpperCase() + message.playbackState.substring(1).toLowerCase();
         }
+
+        this.tvService.getCharacteristic(Characteristics.CurrentMediaState ).updateValue(message && (message.playbackState === "playing" ? 
+            Characteristic.CurrentMediaState.PLAY : 
+            message.playbackState === "paused" ? 
+                Characteristic.CurrentMediaState.PAUSE :
+                Characteristic.CurrentMediaState.STOP));
+
+        this.tvService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(message && message.playbackState === "Playing");
 
         this.stateService.getCharacteristic(Characteristics.State).updateValue(message && message.playbackState ? message.playbackState : "-");
         this.stateService.getCharacteristic(Characteristics.Type).updateValue(message ? (message.album && message.artist ? "Music" : "Video") : "-");
