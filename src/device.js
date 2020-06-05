@@ -74,10 +74,10 @@ class Device {
         this.platform.debug(`Configuring the TV service for accessory (${this.device.name} [${this.device.uid}]).`);
 
         try {
-            let tvService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Tv);
+            let tvService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Television);
 
             if (!tvService) {
-                tvService = accessory.addService(this.platform.api.hap.Service.Tv);
+                tvService = accessory.addService(this.platform.api.hap.Service.Television);
             }
 
             tvService
