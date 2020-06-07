@@ -46,7 +46,6 @@ class Device {
     configureServices = () => {
         this.configureAccessoryInformationService();
         this.configureTVService();
-        this.configureTVSpeakerService();
         this.configureInputServices();
         this.configureSwitchService();
 
@@ -72,6 +71,10 @@ class Device {
     };
 
     configureTVService = () => {
+        if (!this.config.showTvAccessory) {
+            return;
+        }
+
         this.platform.debug(`Configuring television service for accessory (${this.device.name} [${this.device.uid}]).`);
 
         try {
@@ -98,31 +101,11 @@ class Device {
         }
     };
 
-    configureTVSpeakerService = () => {
-        this.platform.debug(`Configuring television speaker service for accessory (${this.device.name} [${this.device.uid}]).`);
-
-        try {
-            this.speakerService = this.accessory.getService(this.platform.api.hap.Service.TelevisionSpeaker);
-
-            if (!this.speakerService) {
-                this.speakerService = this.accessory.addService(this.platform.api.hap.Service.TelevisionSpeaker, `${this.device.name} Television Speaker`);
-            }
-
-            this.speakerService
-                .setCharacteristic(this.platform.api.hap.Characteristic.Active, this.platform.api.hap.Characteristic.Active.ACTIVE)
-                .setCharacteristic(this.platform.api.hap.Characteristic.VolumeControlType, this.platform.api.hap.Characteristic.VolumeControlType.ABSOLUTE);
-            this.speakerService.getCharacteristic(this.platform.api.hap.Characteristic.VolumeSelector).on("set", this.onVolumeSelector);
-
-            this.tvService.addLinkedService(this.speakerService);
-
-            this.platform.debug(`Television speaker service for accessory (${this.device.name} [${this.device.uid}]) configured.`);
-        } catch (error) {
-            this.platform.log(`Television speaker service for accessory (${this.device.name} [${this.device.uid}]) could not be configured.`);
-            this.platform.log(error);
-        }
-    };
-
     configureInputServices = () => {
+        if (!this.config.showTvAccessory) {
+            return;
+        }
+
         this.platform.debug(`Configuring input service(s) for accessory (${this.device.name} [${this.device.uid}]).`);
 
         try {
@@ -158,25 +141,24 @@ class Device {
                     inputService
                         .setCharacteristic(this.platform.api.hap.Characteristic.Identifier, index)
                         .setCharacteristic(this.platform.api.hap.Characteristic.ConfiguredName, input.name)
-                        .setCharacteristic(this.platform.api.hap.Characteristic.IsConfigured, this.platform.api.hap.Characteristic.IsConfigured.CONFIGURED)
+                        //.setCharacteristic(this.platform.api.hap.Characteristic.IsConfigured, this.platform.api.hap.Characteristic.IsConfigured.CONFIGURED)
                         .setCharacteristic(this.platform.api.hap.Characteristic.CurrentVisibilityState, this.platform.api.hap.Characteristic.CurrentVisibilityState.SHOWN);
 
-                    // this.inputsService.getCharacteristic(Characteristic.ConfiguredName).on("set", (name, callback) => {
-                    //     savedNames[inputReference] = name;
-                    //     fs.writeFile(this.customInputsFile, JSON.stringify(savedNames, null, 2), (error) => {
-                    //         if (error) {
-                    //             this.log.error("Device: %s %s, new Input name saved failed, error: %s", this.host, this.name, error);
-                    //         } else {
-                    //             this.log.info("Device: %s %s, new Input name saved successful, name: %s reference: %s", this.host, this.name, name, inputReference);
-                    //         }
-                    //     });
-                    //     callback(null);
-                    // });
+                    //inputService.getCharacteristic(Characteristic.ConfiguredName).on("set", (value, next) => this.onInputConfiguredName(index, value, next));
 
                     this.tvService.addLinkedService(inputService);
 
                     this.platform.debug(`Input service ${input.name} [${index}] for accessory (${this.device.name} [${this.device.uid}]) configured.`);
                 });
+            } else if (this.accessory.context.inputs) {
+                for (let index = 0; index < this.accessory.context.inputs.length; index++) {
+                    let inputService = accessory.getService(this.platform.api.hap.Service.InputSource);
+
+                    if (inputService) {
+                        this.platform.debug(`Removing orphansed input service for accessory (${this.device.name} [${this.device.uid}]).`);
+                        this.accessory.removeService(this.platform.api.hap.Service.InputSource);
+                    }
+                }
             }
         } catch (error) {
             this.platform.log(`Input service(s) for accessory (${this.device.name} [${this.device.uid}]) could not be configured.`);
@@ -210,8 +192,6 @@ class Device {
             this.device.on("nowPlaying", this.onNowPlaying);
             this.device.on("supportedCommands", this.onSupportedCommands);
 
-            this.tvService.addLinkedService(this.switchService);
-
             this.platform.debug(`Switch service for accessory (${this.device.name} [${this.device.uid}]) configured.`);
         } catch (error) {
             this.platform.debug(`Switch service for accessory (${this.device.name} [${this.device.uid}]) could not be configured.`);
@@ -219,19 +199,8 @@ class Device {
         }
     };
 
-    onVolumeSelector = async (value, next) => {
-        if (this.power) {
-            switch (value) {
-                case this.platform.api.hap.Characteristic.VolumeSelector.INCREMENT:
-                    this.platform.debug(`Incrementing volume for accessory (${this.device.name} [${this.device.uid}]).`);
-                    await this.device.sendKeyPressAndRelease(12, 0xe9);
-                    break;
-                case this.platform.api.hap.Characteristic.VolumeSelector.DECREMENT:
-                    this.platform.debug(`Decrementing volume for accessory (${this.device.name} [${this.device.uid}]).`);
-                    await this.device.sendKeyPressAndRelease(12, 0xea);
-                    break;
-            }
-        }
+    onInputConfiguredName = async (index, value, next) => {
+        this.accessory.context.inputs[index].name = value;
 
         next();
     };
@@ -248,18 +217,14 @@ class Device {
         setTimeout(async () => {
             await this.device.sendKeyCommand(appletv.AppleTV.Key.Tv);
 
-            setTimeout(async () => {
-                await this.device.sendKeyCommand(appletv.AppleTV.Key.Tv);
+            for (let i = 0; i < column - 1; i++) {
+                await this.device.sendKeyCommand(appletv.AppleTV.Key.Right);
+            }
 
-                for (let i = 0; i < column - 1; i++) {
-                    await this.device.sendKeyCommand(appletv.AppleTV.Key.Right);
-                }
-
-                for (let i = 0; i < row; i++) {
-                    await this.device.sendKeyCommand(appletv.AppleTV.Key.Down);
-                }
-            }, 800);
-        }, 800);
+            for (let i = 0; i < row; i++) {
+                await this.device.sendKeyCommand(appletv.AppleTV.Key.Down);
+            }
+        }, 1000);
 
         next();
     };
@@ -303,16 +268,18 @@ class Device {
             message.playbackState = message.playbackState[0].toUpperCase() + message.playbackState.substring(1).toLowerCase();
         }
 
-        this.tvService
-            .getCharacteristic(Characteristics.CurrentMediaState)
-            .updateValue(
-                message &&
-                    (message.playbackState === "playing"
-                        ? Characteristic.CurrentMediaState.PLAY
-                        : message.playbackState === "paused"
-                        ? Characteristic.CurrentMediaState.PAUSE
-                        : Characteristic.CurrentMediaState.STOP)
-            );
+        if (!this.config.showTvAccessory) {
+            this.tvService
+                .getCharacteristic(Characteristics.CurrentMediaState)
+                .updateValue(
+                    message &&
+                        (message.playbackState === "playing"
+                            ? Characteristic.CurrentMediaState.PLAY
+                            : message.playbackState === "paused"
+                            ? Characteristic.CurrentMediaState.PAUSE
+                            : Characteristic.CurrentMediaState.STOP)
+                );
+        }
 
         this.switchService.getCharacteristic(Characteristics.State).updateValue(message && message.playbackState ? message.playbackState : "-");
         this.switchService.getCharacteristic(Characteristics.Type).updateValue(message ? (message.album && message.artist ? "Music" : "Video") : "-");
