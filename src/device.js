@@ -175,7 +175,7 @@ class Device {
                 accessory.removeService(tvService);
             }
 
-            this.switchService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Switch.);
+            this.switchService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Switch);
 
             if (!this.switchService) {
                 this.switchService = accessory.addService(this.platform.api.hap.Service.Switch, `${accessory.context.uid}_switch`);
