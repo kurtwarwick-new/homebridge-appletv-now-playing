@@ -136,6 +136,8 @@ class Device {
                 accessory.context.inputs = this.config.inputs;
 
                 this.config.inputs.forEach((input, index) => {
+                    this.platform.debug(`Configuring input service ${input.name} [${index}] for accessory (${this.device.name} [${this.device.uid}]).`);
+
                     let inputService = accessory.getServiceByUUIDAndSubType(`${accessory.context.uid}_input_${index}`, this.platform.api.hap.Service.InputSource);
 
                     if (!inputService) {
@@ -166,7 +168,7 @@ class Device {
 
                     this.tvService.addLinkedService(inputService);
 
-                    this.platform.debug(`Input service ${input.name} for accessory (${this.device.name} [${this.device.uid}]) configured.`);
+                    this.platform.debug(`Input service ${input.name} [${index}] for accessory (${this.device.name} [${this.device.uid}]) configured.`);
                 });
             }
 
