@@ -41,8 +41,8 @@ class Device {
         this.platform.debug(`Accessory (${this.device.name} [${this.device.uid}]) ready.`);
 
         this.configureInformationService(accessory);
-        //this.configureStateService(accessory);
-        this.configureTVService(accessory);
+
+        this.config.displayAsTv ? this.configureTVService(accessory) : this.configureStateService(accessory);
 
         this.powerTimer = setTimeout(() => this.device.sendIntroduction().then(this.onDeviceInfo), 5000);
     };
@@ -74,6 +74,12 @@ class Device {
         this.platform.debug(`Configuring the TV service for accessory (${this.device.name} [${this.device.uid}]).`);
 
         try {
+            let stateService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Switch);
+
+            if (stateService) {
+                accessory.removeService(this.platform.api.hap.Service.Switch);
+            }
+
             this.tvService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Television);
 
             if (!this.tvService) {
@@ -88,6 +94,7 @@ class Device {
                 .setCharacteristic(this.platform.api.hap.Characteristic.ConfiguredName, this.config.name);
 
             this.tvService.getCharacteristic(this.platform.api.hap.Characteristic.Active).on("set", this.onPower);
+            this.televisionService.getCharacteristic(Characteristic.ActiveIdentifier).on("set", this.onInput);
 
             this.speakerService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.TelevisionSpeaker);
 
@@ -97,10 +104,34 @@ class Device {
 
             this.speakerService
                 .setCharacteristic(this.platform.api.hap.Characteristic.Active, this.platform.api.hap.Characteristic.Active.ACTIVE)
-                .setCharacteristic(this.platform.api.hap.Characteristic.VolumeControlType, this.platform.api.hap.Characteristic.VolumeControlType.RELATIVE_WITH_CURRENT);
+                .setCharacteristic(this.platform.api.hap.Characteristic.VolumeControlType, this.platform.api.hap.Characteristic.VolumeControlType.ABSOLUTE);
             this.speakerService.getCharacteristic(this.platform.api.hap.Characteristic.VolumeSelector).on("set", this.onVolumeSelector);
 
             this.tvService.addLinkedService(this.speakerService);
+
+            this.config.inputs.forEach((input, index) => {
+                let inputService = accessory.addService(this.platform.api.hap.Service.InputSource);
+
+                inputService
+                    .setCharacteristic(Characteristic.Identifier, index)
+                    .setCharacteristic(Characteristic.ConfiguredName, input.name)
+                    .setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
+                    .setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN);
+
+                // this.inputsService.getCharacteristic(Characteristic.ConfiguredName).on("set", (name, callback) => {
+                //     savedNames[inputReference] = name;
+                //     fs.writeFile(this.customInputsFile, JSON.stringify(savedNames, null, 2), (error) => {
+                //         if (error) {
+                //             this.log.error("Device: %s %s, new Input name saved failed, error: %s", this.host, this.name, error);
+                //         } else {
+                //             this.log.info("Device: %s %s, new Input name saved successful, name: %s reference: %s", this.host, this.name, name, inputReference);
+                //         }
+                //     });
+                //     callback(null);
+                // });
+
+                this.tvService.addLinkedService(inputService);
+            });
 
             this.platform.debug(`TV service for accessory (${this.device.name} [${this.device.uid}]) configured.`);
         } catch (error) {
@@ -113,6 +144,12 @@ class Device {
         this.platform.debug(`Configuring the state service for accessory (${this.device.name} [${this.device.uid}]).`);
 
         try {
+            let tvService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Television);
+
+            if (tvService) {
+                accessory.removeService(this.platform.api.hap.Service.Television);
+            }
+
             this.stateService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Switch);
 
             if (!this.stateService) {
@@ -143,32 +180,51 @@ class Device {
     };
 
     onVolumeSelector = async (value, next) => {
-		if (this.power) {
-			switch (state) {
-				case this.platform.api.hap.Characteristic.VolumeSelector.INCREMENT:
-					await this.device.sendKeyPressAndRelease(12, 0xE9);
-					break;
-				case this.platform.api.hap.Characteristic.VolumeSelector.DECREMENT:
-                    await this.device.sendKeyPressAndRelease(12, 0xEA)
-					break;
+        if (this.power) {
+            switch (value) {
+                case this.platform.api.hap.Characteristic.VolumeSelector.INCREMENT:
+                    this.platform.debug(`Incrementing volume for accessory (${this.device.name} [${this.device.uid}]).`);
+                    await this.device.sendKeyPressAndRelease(12, 0xe9);
+                    break;
+                case this.platform.api.hap.Characteristic.VolumeSelector.DECREMENT:
+                    this.platform.debug(`Decrementing volume for accessory (${this.device.name} [${this.device.uid}]).`);
+                    await this.device.sendKeyPressAndRelease(12, 0xea);
+                    break;
             }
         }
-        
+
         next();
-	}
+    };
+
+    onInput = async(value, next) => {
+        this.platform.debug(`Opening app ${value} accessory (${this.device.name} [${this.device.uid}]).`);
+
+        let input = this.config.inputs[value];
+        let row = input.index;
+        let column = (input.index - row) / 5;
+
+        await this.device.sendKeyCommand(appletv.AppleTV.Key.Tv);
+        await this.device.sendKeyCommand(appletv.AppleTV.Key.Tv);
+        
+        for(let i = 0; i < row; i ++) {
+            await this.device.sendKeyCommand(appletv.AppleTV.Key.Left);
+        }
+
+        for(let i = 0; i < column; i ++) {
+            await this.device.sendKeyCommand(appletv.AppleTV.Key.Down);
+        }
+    };
 
     onPower = async (value, next) => {
         clearTimeout(this.powerTimer);
 
         this.platform.debug(`Turning accessory (${this.device.name} [${this.device.uid}]) ${value ? "on" : "off"}.`);
 
-        if (this.power) {
-            // await this.device.sendKeyCommand(appletv.AppleTV.Key.LongTv);
-            // await this.device.sendKeyCommand(appletv.AppleTV.Key.Select);
-            await this.device.sendKeyCommand(appletv.AppleTV.Key.Suspend);
-        } else {
-            await this.device.sendKeyPressAndRelease(1, 0x83);
-            //await this.device.sendKeyCommand(appletv.AppleTV.Key.Tv);
+        if (value && !this.power) {
+            await this.device.sendKeyCommand(appletv.AppleTV.Key.LongTv);
+            await this.device.sendKeyCommand(appletv.AppleTV.Key.Select);
+        } else if (!value && this.power) {
+            await this.device.sendKeyCommand(appletv.AppleTV.Key.Tv);
         }
 
         this.power = value;
