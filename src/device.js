@@ -174,7 +174,11 @@ class Device {
             this.switchService = this.accessory.getService(this.platform.api.hap.Service.Switch);
 
             if (!this.switchService) {
-                this.switchService = this.accessory.addService(this.platform.api.hap.Service.Switch, `${this.accessory.context.uid}_switch`);
+                this.switchService = this.accessory.addService(
+                    this.platform.api.hap.Service.Switch,
+                    `${this.device.name} '${input.name}' Switch`,
+                    `${this.accessory.context.uid}_switch`
+                );
             }
 
             !this.switchService.getCharacteristic(Characteristics.State) && this.switchService.addCharacteristic(Characteristics.State);
