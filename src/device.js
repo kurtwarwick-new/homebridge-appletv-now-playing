@@ -231,7 +231,9 @@ class Device {
         this.platform.debug(`TV.`);
         await this.device.sendKeyCommand(appletv.AppleTV.Key.Tv);
         this.platform.debug(`TV.`);
-        await this.device.sendKeyCommand(appletv.AppleTV.Key.Tv);
+        setTimeout(async () => await this.device.sendKeyCommand(appletv.AppleTV.Key.Tv), 200);
+        this.platform.debug(`TV.`);
+        setTimeout(async () => await this.device.sendKeyCommand(appletv.AppleTV.Key.Tv), 200);
 
         for (let i = 0; i < column; i++) {
             this.platform.debug(`right.`);
