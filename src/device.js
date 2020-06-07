@@ -69,7 +69,7 @@ class Device {
         this.platform.debug(`Configuring the television service for accessory (${this.device.name} [${this.device.uid}]).`);
 
         try {
-            let switchService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Switch);
+            let switchService = accessory.getService(this.platform.api.hap.Service.Switch);
 
             if (switchService) {
                 this.platform.debug(`Removing the switch service for accessory (${this.device.name} [${this.device.uid}]).`);
@@ -77,7 +77,7 @@ class Device {
                 accessory.removeService(switchService);
             }
 
-            this.tvService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Television);
+            this.tvService = accessory.getService(this.platform.api.hap.Service.Television);
 
             if (!this.tvService) {
                 this.tvService = accessory.addService(this.platform.api.hap.Service.Television, `${this.device.name} Television`);
@@ -93,7 +93,7 @@ class Device {
             this.tvService.getCharacteristic(this.platform.api.hap.Characteristic.Active).on("set", this.onPower);
             this.tvService.getCharacteristic(this.platform.api.hap.Characteristic.ActiveIdentifier).on("set", this.onInput);
 
-            this.speakerService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.TelevisionSpeaker.UUID);
+            this.speakerService = accessory.getService(this.platform.api.hap.Service.TelevisionSpeaker);
 
             if (!this.speakerService) {
                 this.speakerService = accessory.addService(this.platform.api.hap.Service.TelevisionSpeaker, `${this.device.name} Television Speaker`);
@@ -126,7 +126,7 @@ class Device {
                 this.config.inputs.forEach((input, index) => {
                     this.platform.debug(`Configuring input service ${input.name} [${index}] for accessory (${this.device.name} [${this.device.uid}]).`);
 
-                    let inputService = accessory.getServiceByUUIDAndSubType(`${accessory.context.uid}_input_${index}`);
+                    let inputService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.InputSource, `${accessory.context.uid}_input_${index}`);
 
                     if (!inputService) {
                         inputService = accessory.addService(this.platform.api.hap.Service.InputSource, `${this.device.name} '${input.name}' Input`, `${accessory.context.uid}_input_${index}`);
@@ -167,7 +167,7 @@ class Device {
         this.platform.debug(`Configuring the state service for accessory (${this.device.name} [${this.device.uid}]).`);
 
         try {
-            let tvService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Television);
+            let tvService = accessory.getService(this.platform.api.hap.Service.Television);
 
             if (tvService) {
                 this.platform.debug(`Removing the television service for accessory (${this.device.name} [${this.device.uid}]).`);
@@ -175,7 +175,7 @@ class Device {
                 accessory.removeService(tvService);
             }
 
-            this.switchService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Switch);
+            this.switchService = accessory.getService(this.platform.api.hap.Service.Switch);
 
             if (!this.switchService) {
                 this.switchService = accessory.addService(this.platform.api.hap.Service.Switch, `${accessory.context.uid}_switch`);
