@@ -83,7 +83,7 @@ class Device {
             if (switchService) {
                 this.platform.debug(`Removing the switch service for accessory (${this.device.name} [${this.device.uid}]).`);
 
-                accessory.removeService(this.platform.api.hap.Service.Switch);
+                accessory.removeService(switchService);
             }
 
             this.tvService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Television);
@@ -119,35 +119,56 @@ class Device {
 
             this.tvService.addLinkedService(this.speakerService);
 
-            this.config.inputs.forEach((input, index) => {
-                let inputService = accessory.addService(
-                    this.platform.api.hap.Service.InputSource,
-                    `${this.device.name} '${input.name}' Input`,
-                    `${accessory.context.uid}_input_${index}`
-                );
+            if (this.config.inputs && this.config.inputs.length) {
+                if (accessory.context.inputs.length > this.config.inputs.length) {
+                    let difference = accessory.context.inputs.length - this.config.inputs.length;
 
-                inputService
-                    .setCharacteristic(this.platform.api.hap.Characteristic.Identifier, index)
-                    .setCharacteristic(this.platform.api.hap.Characteristic.ConfiguredName, input.name)
-                    .setCharacteristic(this.platform.api.hap.Characteristic.IsConfigured, this.platform.api.hap.Characteristic.IsConfigured.CONFIGURED)
-                    .setCharacteristic(this.platform.api.hap.Characteristic.CurrentVisibilityState, this.platform.api.hap.Characteristic.CurrentVisibilityState.SHOWN);
+                    for (let index = accessory.context.inputs.length - 1; index > difference - 1; index--) {
+                        let inputService = accessory.getServiceByUUIDAndSubType(`${accessory.context.uid}_input_${index}`, this.platform.api.hap.Service.InputSource);
 
-                // this.inputsService.getCharacteristic(Characteristic.ConfiguredName).on("set", (name, callback) => {
-                //     savedNames[inputReference] = name;
-                //     fs.writeFile(this.customInputsFile, JSON.stringify(savedNames, null, 2), (error) => {
-                //         if (error) {
-                //             this.log.error("Device: %s %s, new Input name saved failed, error: %s", this.host, this.name, error);
-                //         } else {
-                //             this.log.info("Device: %s %s, new Input name saved successful, name: %s reference: %s", this.host, this.name, name, inputReference);
-                //         }
-                //     });
-                //     callback(null);
-                // });
+                        if (inputService) {
+                            this.platform.debug(`Removing orphansed input service for accessory (${this.device.name} [${this.device.uid}]).`);
+                            accessory.removeService(inputService);
+                        }
+                    }
+                }
 
-                this.tvService.addLinkedService(inputService);
+                accessory.context.inputs = this.config.inputs;
 
-                this.platform.debug(`Input service ${input.name} for accessory (${this.device.name} [${this.device.uid}]) configured.`);
-            });
+                this.config.inputs.forEach((input, index) => {
+                    let inputService = accessory.getServiceByUUIDAndSubType(`${accessory.context.uid}_input_${index}`, this.platform.api.hap.Service.InputSource);
+
+                    if (!inputService) {
+                        inputService = accessory.addService(
+                            this.platform.api.hap.Service.InputSource,
+                            `${this.device.name} '${input.name}' Input`,
+                            `${accessory.context.uid}_input_${index}`
+                        );
+                    }
+
+                    inputService
+                        .setCharacteristic(this.platform.api.hap.Characteristic.Identifier, index)
+                        .setCharacteristic(this.platform.api.hap.Characteristic.ConfiguredName, input.name)
+                        .setCharacteristic(this.platform.api.hap.Characteristic.IsConfigured, this.platform.api.hap.Characteristic.IsConfigured.CONFIGURED)
+                        .setCharacteristic(this.platform.api.hap.Characteristic.CurrentVisibilityState, this.platform.api.hap.Characteristic.CurrentVisibilityState.SHOWN);
+
+                    // this.inputsService.getCharacteristic(Characteristic.ConfiguredName).on("set", (name, callback) => {
+                    //     savedNames[inputReference] = name;
+                    //     fs.writeFile(this.customInputsFile, JSON.stringify(savedNames, null, 2), (error) => {
+                    //         if (error) {
+                    //             this.log.error("Device: %s %s, new Input name saved failed, error: %s", this.host, this.name, error);
+                    //         } else {
+                    //             this.log.info("Device: %s %s, new Input name saved successful, name: %s reference: %s", this.host, this.name, name, inputReference);
+                    //         }
+                    //     });
+                    //     callback(null);
+                    // });
+
+                    this.tvService.addLinkedService(inputService);
+
+                    this.platform.debug(`Input service ${input.name} for accessory (${this.device.name} [${this.device.uid}]) configured.`);
+                });
+            }
 
             this.platform.debug(`Television service for accessory (${this.device.name} [${this.device.uid}]) configured.`);
         } catch (error) {
@@ -165,7 +186,7 @@ class Device {
             if (tvService) {
                 this.platform.debug(`Removing the television service for accessory (${this.device.name} [${this.device.uid}]).`);
 
-                accessory.removeService(this.platform.api.hap.Service.Television);
+                accessory.removeService(tvService);
             }
 
             this.switchService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Switch);
@@ -272,16 +293,17 @@ class Device {
             message.playbackState = message.playbackState[0].toUpperCase() + message.playbackState.substring(1).toLowerCase();
         }
 
-        this.tvService && this.tvService
-            .getCharacteristic(Characteristics.CurrentMediaState)
-            .updateValue(
-                message &&
-                    (message.playbackState === "playing"
-                        ? Characteristic.CurrentMediaState.PLAY
-                        : message.playbackState === "paused"
-                        ? Characteristic.CurrentMediaState.PAUSE
-                        : Characteristic.CurrentMediaState.STOP)
-            );
+        this.tvService &&
+            this.tvService
+                .getCharacteristic(Characteristics.CurrentMediaState)
+                .updateValue(
+                    message &&
+                        (message.playbackState === "playing"
+                            ? Characteristic.CurrentMediaState.PLAY
+                            : message.playbackState === "paused"
+                            ? Characteristic.CurrentMediaState.PAUSE
+                            : Characteristic.CurrentMediaState.STOP)
+                );
 
         this.switchService && this.switchService.getCharacteristic(Characteristics.State).updateValue(message && message.playbackState ? message.playbackState : "-");
         this.switchService && this.switchService.getCharacteristic(Characteristics.Type).updateValue(message ? (message.album && message.artist ? "Music" : "Video") : "-");

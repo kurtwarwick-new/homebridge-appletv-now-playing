@@ -46,6 +46,12 @@ class Platform {
         }
     };
 
+    removeAccessory = (accessory) => {
+        this.debug(`Removing accessory width id ${accessory.UUID}`);
+
+        this.api.unregisterPlatformAccessories(Platform.pluginName, Platform.platformName, [accessory]);
+    };
+
     cleanupAccessory = (accessory) => {
         let foundAccessory = this.config.devices.filter((deviceConfiguration) => {
             let credentials = appletv.parseCredentials(deviceConfiguration.credentials);
