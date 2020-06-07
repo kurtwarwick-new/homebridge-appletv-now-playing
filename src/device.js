@@ -94,7 +94,7 @@ class Device {
                 .setCharacteristic(this.platform.api.hap.Characteristic.ConfiguredName, this.config.name);
 
             this.tvService.getCharacteristic(this.platform.api.hap.Characteristic.Active).on("set", this.onPower);
-            this.televisionService.getCharacteristic(Characteristic.ActiveIdentifier).on("set", this.onInput);
+            this.tvService.getCharacteristic(Characteristic.ActiveIdentifier).on("set", this.onInput);
 
             this.speakerService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.TelevisionSpeaker);
 
