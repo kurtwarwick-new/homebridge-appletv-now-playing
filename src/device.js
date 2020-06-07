@@ -45,9 +45,9 @@ class Device {
 
     configureServices = () => {
         this.configureAccessoryInformationService();
+        this.configureSwitchService();
         this.configureTVService();
         this.configureInputServices();
-        this.configureSwitchService();
 
         this.powerTimer = setTimeout(() => this.device.sendIntroduction().then(this.onDeviceInfo), 5000);
     };
