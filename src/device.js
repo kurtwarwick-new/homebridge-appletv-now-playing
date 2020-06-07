@@ -238,20 +238,20 @@ class Device {
         this.platform.debug(`Opening app ${value} accessory (${this.device.name} [${this.device.uid}]).`);
 
         let input = this.config.inputs[value];
-        let row = input.index % 5;
-        let column = (input.index - row) / 5;
+        let column = input.index % 5;
+        let row = (input.index - column) / 5;
 
         this.platform.debug(`TV.`);
         await this.device.sendKeyCommand(appletv.AppleTV.Key.Tv);
         this.platform.debug(`TV.`);
         await this.device.sendKeyCommand(appletv.AppleTV.Key.Tv);
 
-        for (let i = 0; i < row; i++) {
+        for (let i = 0; i < column; i++) {
             this.platform.debug(`right.`);
             await this.device.sendKeyCommand(appletv.AppleTV.Key.Right);
         }
 
-        for (let i = 0; i < column; i++) {
+        for (let i = 0; i < row; i++) {
             this.platform.debug(`down.`);
             await this.device.sendKeyCommand(appletv.AppleTV.Key.Down);
         }
