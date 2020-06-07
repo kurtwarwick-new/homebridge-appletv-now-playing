@@ -94,7 +94,7 @@ class Device {
                 .setCharacteristic(this.platform.api.hap.Characteristic.ConfiguredName, this.config.name);
 
             this.tvService.getCharacteristic(this.platform.api.hap.Characteristic.Active).on("set", this.onPower);
-            this.tvService.getCharacteristic(Characteristic.ActiveIdentifier).on("set", this.onInput);
+            this.tvService.getCharacteristic(this.platform.api.hap.Characteristic.ActiveIdentifier).on("set", this.onInput);
 
             this.speakerService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.TelevisionSpeaker);
 
@@ -113,10 +113,10 @@ class Device {
                 let inputService = accessory.addService(this.platform.api.hap.Service.InputSource);
 
                 inputService
-                    .setCharacteristic(Characteristic.Identifier, index)
-                    .setCharacteristic(Characteristic.ConfiguredName, input.name)
-                    .setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
-                    .setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN);
+                    .setCharacteristic(this.platform.api.hap.Characteristic.Identifier, index)
+                    .setCharacteristic(this.platform.api.hap.Characteristic.ConfiguredName, input.name)
+                    .setCharacteristic(this.platform.api.hap.Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
+                    .setCharacteristic(this.platform.api.hap.Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN);
 
                 // this.inputsService.getCharacteristic(Characteristic.ConfiguredName).on("set", (name, callback) => {
                 //     savedNames[inputReference] = name;
