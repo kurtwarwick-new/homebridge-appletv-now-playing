@@ -115,8 +115,8 @@ class Device {
                 inputService
                     .setCharacteristic(this.platform.api.hap.Characteristic.Identifier, index)
                     .setCharacteristic(this.platform.api.hap.Characteristic.ConfiguredName, input.name)
-                    .setCharacteristic(this.platform.api.hap.Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
-                    .setCharacteristic(this.platform.api.hap.Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN);
+                    .setCharacteristic(this.platform.api.hap.Characteristic.IsConfigured, this.platform.api.hap.Characteristic.IsConfigured.CONFIGURED)
+                    .setCharacteristic(this.platform.api.hap.Characteristic.CurrentVisibilityState, this.platform.api.hap.Characteristic.CurrentVisibilityState.SHOWN);
 
                 // this.inputsService.getCharacteristic(Characteristic.ConfiguredName).on("set", (name, callback) => {
                 //     savedNames[inputReference] = name;
