@@ -141,7 +141,7 @@ class Device {
                         inputService = this.accessory.addService(
                             this.platform.api.hap.Service.InputSource,
                             `${this.device.name} '${input.name}' Input`,
-                            `${accessory.context.uid}_input_${index}`
+                            `${this.accessory.context.uid}_input_${index}`
                         );
                     }
 
