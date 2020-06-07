@@ -54,7 +54,7 @@ class Device {
             let accessoryInformationService = accessory.getService(this.platform.api.hap.Service.AccessoryInformation);
 
             if (!accessoryInformationService) {
-                accessoryInformationService = accessory.addService(this.platform.api.hap.Service.AccessoryInformation);
+                accessoryInformationService = accessory.addService(this.platform.api.hap.Service.AccessoryInformation, `${this.device.name} Information`,`${accessory.context.uid}_information`);
             }
 
             accessoryInformationService
@@ -74,16 +74,16 @@ class Device {
         this.platform.debug(`Configuring the TV service for accessory (${this.device.name} [${this.device.uid}]).`);
 
         try {
-            let stateService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Switch);
+            let switchService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Switch);
 
-            if (stateService) {
+            if (switchService) {
                 accessory.removeService(this.platform.api.hap.Service.Switch);
             }
 
             this.tvService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Television);
 
             if (!this.tvService) {
-                this.tvService = accessory.addService(this.platform.api.hap.Service.Television);
+                this.tvService = accessory.addService(this.platform.api.hap.Service.Television, `${this.device.name} Television`, `${accessory.context.uid}_television`);
             }
 
             this.tvService
@@ -99,7 +99,7 @@ class Device {
             this.speakerService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.TelevisionSpeaker);
 
             if (!this.speakerService) {
-                this.speakerService = accessory.addService(this.platform.api.hap.Service.TelevisionSpeaker);
+                this.speakerService = accessory.addService(this.platform.api.hap.Service.TelevisionSpeaker, `${this.device.name} Television Speaker`, `${accessory.context.uid}_speaker`);
             }
 
             this.speakerService
@@ -110,7 +110,7 @@ class Device {
             this.tvService.addLinkedService(this.speakerService);
 
             this.config.inputs.forEach((input, index) => {
-                let inputService = accessory.addService(this.platform.api.hap.Service.InputSource);
+                let inputService = accessory.addService(this.platform.api.hap.Service.InputSource, `${this.device.name} '${input.name}' Input`, `${accessory.context.uid}_input_${index}`);
 
                 inputService
                     .setCharacteristic(this.platform.api.hap.Characteristic.Identifier, index)
@@ -150,24 +150,24 @@ class Device {
                 accessory.removeService(this.platform.api.hap.Service.Television);
             }
 
-            this.stateService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Switch);
+            this.switchService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Switch);
 
-            if (!this.stateService) {
-                this.stateService = accessory.addService(this.platform.api.hap.Service.Switch);
+            if (!this.switchService) {
+                this.switchService = accessory.addService(this.platform.api.hap.Service.Switch, `${accessory.context.uid}_switch`);
             }
 
-            !this.stateService.getCharacteristic(Characteristics.State) && this.stateService.addCharacteristic(Characteristics.State);
-            !this.stateService.getCharacteristic(Characteristics.Type) && this.stateService.addCharacteristic(Characteristics.Type);
-            !this.stateService.getCharacteristic(Characteristics.Title) && this.stateService.addCharacteristic(Characteristics.Title);
-            !this.stateService.getCharacteristic(Characteristics.Artist) && this.stateService.addCharacteristic(Characteristics.Artist);
-            !this.stateService.getCharacteristic(Characteristics.Album) && this.stateService.addCharacteristic(Characteristics.Album);
-            !this.stateService.getCharacteristic(Characteristics.Application) && this.stateService.addCharacteristic(Characteristics.Application);
-            !this.stateService.getCharacteristic(Characteristics.ApplicationBundleId) && this.stateService.addCharacteristic(Characteristics.ApplicationBundleId);
-            !this.stateService.getCharacteristic(Characteristics.ElapsedTime) && this.stateService.addCharacteristic(Characteristics.ElapsedTime);
-            !this.stateService.getCharacteristic(Characteristics.Duration) && this.stateService.addCharacteristic(Characteristics.Duration);
-            !this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.Active) && this.stateService.addCharacteristic(this.platform.api.hap.Characteristic.Active);
+            !this.switchService.getCharacteristic(Characteristics.State) && this.switchService.addCharacteristic(Characteristics.State);
+            !this.switchService.getCharacteristic(Characteristics.Type) && this.switchService.addCharacteristic(Characteristics.Type);
+            !this.switchService.getCharacteristic(Characteristics.Title) && this.switchService.addCharacteristic(Characteristics.Title);
+            !this.switchService.getCharacteristic(Characteristics.Artist) && this.switchService.addCharacteristic(Characteristics.Artist);
+            !this.switchService.getCharacteristic(Characteristics.Album) && this.switchService.addCharacteristic(Characteristics.Album);
+            !this.switchService.getCharacteristic(Characteristics.Application) && this.switchService.addCharacteristic(Characteristics.Application);
+            !this.switchService.getCharacteristic(Characteristics.ApplicationBundleId) && this.switchService.addCharacteristic(Characteristics.ApplicationBundleId);
+            !this.switchService.getCharacteristic(Characteristics.ElapsedTime) && this.switchService.addCharacteristic(Characteristics.ElapsedTime);
+            !this.switchService.getCharacteristic(Characteristics.Duration) && this.switchService.addCharacteristic(Characteristics.Duration);
+            !this.switchService.getCharacteristic(this.platform.api.hap.Characteristic.Active) && this.switchService.addCharacteristic(this.platform.api.hap.Characteristic.Active);
 
-            this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.On).on("set", this.onPower);
+            this.switchService.getCharacteristic(this.platform.api.hap.Characteristic.On).on("set", this.onPower);
 
             this.device.on("nowPlaying", this.onNowPlaying);
             this.device.on("supportedCommands", this.onSupportedCommands);
@@ -235,7 +235,7 @@ class Device {
 
     onDeviceInfo = (message) => {
         this.power = message.payload.logicalDeviceCount == 1;
-        this.stateService && this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.On).updateValue(this.power);
+        this.switchService && this.switchService.getCharacteristic(this.platform.api.hap.Characteristic.On).updateValue(this.power);
         this.tvService && this.tvService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(this.power);
 
         this.powerTimer = setTimeout(() => this.device.sendIntroduction().then(this.onDeviceInfo), 5000);
@@ -244,7 +244,7 @@ class Device {
     onSupportedCommands = (message) => {
         if (!!message) {
             if (!message.length) {
-                this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(false);
+                this.switchService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(false);
             }
         }
     };
@@ -265,18 +265,18 @@ class Device {
                         : Characteristic.CurrentMediaState.STOP)
             );
 
-        this.stateService && this.stateService.getCharacteristic(Characteristics.State).updateValue(message && message.playbackState ? message.playbackState : "-");
-        this.stateService && this.stateService.getCharacteristic(Characteristics.Type).updateValue(message ? (message.album && message.artist ? "Music" : "Video") : "-");
-        this.stateService && this.stateService.getCharacteristic(Characteristics.Title).updateValue(message && message.title ? message.title : "-");
-        this.stateService && this.stateService.getCharacteristic(Characteristics.Artist).updateValue(message && message.artist ? message.artist : "-");
-        this.stateService && this.stateService.getCharacteristic(Characteristics.Album).updateValue(message && message.album ? message.album : "-");
-        this.stateService && this.stateService.getCharacteristic(Characteristics.Application).updateValue(message && message.appDisplayName ? message.appDisplayName : "-");
-        this.stateService &&
-            this.stateService.getCharacteristic(Characteristics.ApplicationBundleId).updateValue(message && message.appBundleIdentifier ? message.appBundleIdentifier : "-");
-        this.stateService &&
-            this.stateService.getCharacteristic(Characteristics.ElapsedTime).updateValue(message && message.elapsedTime > 0 ? Math.round(message.elapsedTime) : "-");
-        this.stateService && this.stateService.getCharacteristic(Characteristics.Duration).updateValue(message && message.duration > 0 ? Math.round(message.duration) : "-");
-        this.stateService && this.stateService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(message && message.playbackState === "Playing");
+        this.switchService && this.switchService.getCharacteristic(Characteristics.State).updateValue(message && message.playbackState ? message.playbackState : "-");
+        this.switchService && this.switchService.getCharacteristic(Characteristics.Type).updateValue(message ? (message.album && message.artist ? "Music" : "Video") : "-");
+        this.switchService && this.switchService.getCharacteristic(Characteristics.Title).updateValue(message && message.title ? message.title : "-");
+        this.switchService && this.switchService.getCharacteristic(Characteristics.Artist).updateValue(message && message.artist ? message.artist : "-");
+        this.switchService && this.switchService.getCharacteristic(Characteristics.Album).updateValue(message && message.album ? message.album : "-");
+        this.switchService && this.switchService.getCharacteristic(Characteristics.Application).updateValue(message && message.appDisplayName ? message.appDisplayName : "-");
+        this.switchService &&
+            this.switchService.getCharacteristic(Characteristics.ApplicationBundleId).updateValue(message && message.appBundleIdentifier ? message.appBundleIdentifier : "-");
+        this.switchService &&
+            this.switchService.getCharacteristic(Characteristics.ElapsedTime).updateValue(message && message.elapsedTime > 0 ? Math.round(message.elapsedTime) : "-");
+        this.switchService && this.switchService.getCharacteristic(Characteristics.Duration).updateValue(message && message.duration > 0 ? Math.round(message.duration) : "-");
+        this.switchService && this.switchService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(message && message.playbackState === "Playing");
     };
 }
 
