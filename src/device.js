@@ -244,16 +244,22 @@ class Device {
         let row = input.index;
         let column = (input.index - row) / 5;
 
+        this.platform.debug(`TV.`);
         await this.device.sendKeyCommand(appletv.AppleTV.Key.Tv);
+        this.platform.debug(`TV.`);
         await this.device.sendKeyCommand(appletv.AppleTV.Key.Tv);
 
         for (let i = 0; i < row; i++) {
-            await this.device.sendKeyCommand(appletv.AppleTV.Key.Left);
+            this.platform.debug(`right.`);
+            await this.device.sendKeyCommand(appletv.AppleTV.Key.Right);
         }
 
         for (let i = 0; i < column; i++) {
+            this.platform.debug(`down.`);
             await this.device.sendKeyCommand(appletv.AppleTV.Key.Down);
         }
+
+        next();
     };
 
     onPower = async (value, next) => {
