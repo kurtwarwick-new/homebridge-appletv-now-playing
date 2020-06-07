@@ -38,13 +38,13 @@ class Device {
             this.platform.updateAccessories([accessory]);
         }
 
-        this.platform.debug(`Accessory (${this.device.name} [${this.device.uid}]) ready.`);
-
         this.configureInformationService(accessory);
 
         this.config.displayAsTv ? this.configureTVService(accessory) : this.configureStateService(accessory);
 
         this.powerTimer = setTimeout(() => this.device.sendIntroduction().then(this.onDeviceInfo), 5000);
+
+        this.platform.log(`Accessory (${this.device.name} [${this.device.uid}]) ready.`);
     };
 
     configureInformationService = (accessory) => {
@@ -54,7 +54,11 @@ class Device {
             let accessoryInformationService = accessory.getService(this.platform.api.hap.Service.AccessoryInformation);
 
             if (!accessoryInformationService) {
-                accessoryInformationService = accessory.addService(this.platform.api.hap.Service.AccessoryInformation, `${this.device.name} Information`,`${accessory.context.uid}_information`);
+                accessoryInformationService = accessory.addService(
+                    this.platform.api.hap.Service.AccessoryInformation,
+                    `${this.device.name} Information`,
+                    `${accessory.context.uid}_information`
+                );
             }
 
             accessoryInformationService
@@ -71,12 +75,14 @@ class Device {
     };
 
     configureTVService = (accessory) => {
-        this.platform.debug(`Configuring the TV service for accessory (${this.device.name} [${this.device.uid}]).`);
+        this.platform.debug(`Configuring the television service for accessory (${this.device.name} [${this.device.uid}]).`);
 
         try {
-            let switchService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Switch);
+            let switchService = accessory.getServiceByUUIDAndSubType(`${accessory.context.uid}_switch`, this.platform.api.hap.Service.Switch);
 
             if (switchService) {
+                this.platform.debug(`Removing the switch service for accessory (${this.device.name} [${this.device.uid}]).`);
+
                 accessory.removeService(this.platform.api.hap.Service.Switch);
             }
 
@@ -99,7 +105,11 @@ class Device {
             this.speakerService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.TelevisionSpeaker);
 
             if (!this.speakerService) {
-                this.speakerService = accessory.addService(this.platform.api.hap.Service.TelevisionSpeaker, `${this.device.name} Television Speaker`, `${accessory.context.uid}_speaker`);
+                this.speakerService = accessory.addService(
+                    this.platform.api.hap.Service.TelevisionSpeaker,
+                    `${this.device.name} Television Speaker`,
+                    `${accessory.context.uid}_speaker`
+                );
             }
 
             this.speakerService
@@ -110,7 +120,11 @@ class Device {
             this.tvService.addLinkedService(this.speakerService);
 
             this.config.inputs.forEach((input, index) => {
-                let inputService = accessory.addService(this.platform.api.hap.Service.InputSource, `${this.device.name} '${input.name}' Input`, `${accessory.context.uid}_input_${index}`);
+                let inputService = accessory.addService(
+                    this.platform.api.hap.Service.InputSource,
+                    `${this.device.name} '${input.name}' Input`,
+                    `${accessory.context.uid}_input_${index}`
+                );
 
                 inputService
                     .setCharacteristic(this.platform.api.hap.Characteristic.Identifier, index)
@@ -131,11 +145,13 @@ class Device {
                 // });
 
                 this.tvService.addLinkedService(inputService);
+
+                this.platform.debug(`Input service ${input.name} for accessory (${this.device.name} [${this.device.uid}]) configured.`);
             });
 
-            this.platform.debug(`TV service for accessory (${this.device.name} [${this.device.uid}]) configured.`);
+            this.platform.debug(`Television service for accessory (${this.device.name} [${this.device.uid}]) configured.`);
         } catch (error) {
-            this.platform.debug(`TV service for accessory (${this.device.name} [${this.device.uid}]) could not be configured.`);
+            this.platform.debug(`Television service for accessory (${this.device.name} [${this.device.uid}]) could not be configured.`);
             this.platform.debug(error);
         }
     };
@@ -144,9 +160,11 @@ class Device {
         this.platform.debug(`Configuring the state service for accessory (${this.device.name} [${this.device.uid}]).`);
 
         try {
-            let tvService = accessory.getServiceByUUIDAndSubType(this.platform.api.hap.Service.Television);
+            let tvService = accessory.getServiceByUUIDAndSubType(`${accessory.context.uid}_switch`, this.platform.api.hap.Service.Television);
 
             if (tvService) {
+                this.platform.debug(`Removing the television service for accessory (${this.device.name} [${this.device.uid}]).`);
+
                 accessory.removeService(this.platform.api.hap.Service.Television);
             }
 
@@ -196,7 +214,7 @@ class Device {
         next();
     };
 
-    onInput = async(value, next) => {
+    onInput = async (value, next) => {
         this.platform.debug(`Opening app ${value} accessory (${this.device.name} [${this.device.uid}]).`);
 
         let input = this.config.inputs[value];
@@ -205,12 +223,12 @@ class Device {
 
         await this.device.sendKeyCommand(appletv.AppleTV.Key.Tv);
         await this.device.sendKeyCommand(appletv.AppleTV.Key.Tv);
-        
-        for(let i = 0; i < row; i ++) {
+
+        for (let i = 0; i < row; i++) {
             await this.device.sendKeyCommand(appletv.AppleTV.Key.Left);
         }
 
-        for(let i = 0; i < column; i ++) {
+        for (let i = 0; i < column; i++) {
             await this.device.sendKeyCommand(appletv.AppleTV.Key.Down);
         }
     };
@@ -254,7 +272,7 @@ class Device {
             message.playbackState = message.playbackState[0].toUpperCase() + message.playbackState.substring(1).toLowerCase();
         }
 
-        this.tvService
+        this.tvService && this.tvService
             .getCharacteristic(Characteristics.CurrentMediaState)
             .updateValue(
                 message &&

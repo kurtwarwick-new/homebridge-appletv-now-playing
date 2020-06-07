@@ -8,43 +8,46 @@ class Platform {
         this.api = api;
         this.accessories = [];
         this.devices = [];
-        
+
         this.api.on("didFinishLaunching", this.onApiDidFinishLaunching);
     }
 
-    debug = message => {
+    debug = (message) => {
         if (this.config && this.config.debug) {
             this.log(message);
         }
-    }
+    };
 
-    registerAccessories = accessories => {
+    log = (message) => {
+        this.log(message);
+    };
+
+    registerAccessories = (accessories) => {
         this.api.registerPlatformAccessories(Platform.pluginName, Platform.platformName, accessories);
-    }
+    };
 
-    unregisterAccessories = accessories => {
+    unregisterAccessories = (accessories) => {
         this.api.unregisterPlatformAccessories(Platform.pluginName, Platform.platformName, accessories);
-    }
+    };
 
-    updateAccessories = accessories => {
+    updateAccessories = (accessories) => {
         this.api.updatePlatformAccessories(accessories);
-    }
+    };
 
-    configureAccessory = accessory => {
+    configureAccessory = (accessory) => {
         if (!accessory.context.uid) {
             this.debug(`Removing cached accessory width id ${accessory.UUID}`);
 
             this.api.unregisterPlatformAccessories(Platform.pluginName, Platform.platformName, [accessory]);
-        }
-        else {
+        } else {
             this.accessories.push(accessory);
 
             this.debug(`Loaded cached accessory width id ${accessory.UUID}`);
         }
-    }
+    };
 
-    cleanupAccessory = accessory => {
-        let foundAccessory = this.config.devices.filter(deviceConfiguration => {
+    cleanupAccessory = (accessory) => {
+        let foundAccessory = this.config.devices.filter((deviceConfiguration) => {
             let credentials = appletv.parseCredentials(deviceConfiguration.credentials);
             accessory.UUID === `${credentials.uniqueIdentifier}_apple_tv`;
         });
@@ -54,9 +57,9 @@ class Platform {
 
             this.unregisterAccessories([accessory]);
         }
-    }
+    };
 
-    loadDevice = async deviceConfiguration => {
+    loadDevice = async (deviceConfiguration) => {
         let credentials = appletv.parseCredentials(deviceConfiguration.credentials);
 
         this.debug(`Scanning for Apple TV [${credentials.uniqueIdentifier}].`);
@@ -72,7 +75,7 @@ class Platform {
         this.debug(`Loading acessory for ${connectedDevice.name} [${connectedDevice.uid}].`);
 
         this.devices.push(new Device(this, deviceConfiguration, connectedDevice));
-    }
+    };
 
     onApiDidFinishLaunching = () => {
         if (!this.config.devices) {
@@ -85,9 +88,9 @@ class Platform {
         this.accessories.map(this.cleanupAccessory);
 
         this.debug("Loading configured Apple TVs...");
-        
+
         this.config.devices.map(this.loadDevice);
-    }
+    };
 }
 
 Platform.pluginName = "homebridge-appletv-now-playing";
