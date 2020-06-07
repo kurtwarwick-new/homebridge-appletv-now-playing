@@ -72,7 +72,13 @@ class Device {
 
     configureTVService = () => {
         if (!this.config.showTvAccessory) {
-            this.accessory.removeService(this.platform.api.hap.Service.Television);
+            let tvService = this.accessory.getService(this.platform.api.hap.Service.Television);
+
+            if (tvService) {
+                this.platform.debug(`Removing television service for accessory (${this.device.name} [${this.device.uid}]).`);
+                this.accessory.removeService(tvService);
+            }
+
             return;
         }
 
