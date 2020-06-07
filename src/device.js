@@ -51,7 +51,7 @@ class Device {
         this.platform.debug(`Configuring the information service for accessory (${this.device.name} [${this.device.uid}]).`);
 
         try {
-            let accessoryInformationService = accessory.getService(`${accessory.context.uid}_information`, this.platform.api.hap.Service.AccessoryInformation);
+            let accessoryInformationService = accessory.getServiceByUUIDAndSubType(`${accessory.context.uid}_information`, this.platform.api.hap.Service.AccessoryInformation);
 
             if (!accessoryInformationService) {
                 accessoryInformationService = accessory.addService(
