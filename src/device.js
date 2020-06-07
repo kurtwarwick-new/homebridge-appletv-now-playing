@@ -244,8 +244,8 @@ class Device {
                     await this.device.sendKeyCommand(appletv.AppleTV.Key.Down);
                 }
 
-            }, 200);
-        }, 200);
+            }, 800);
+        }, 800);
 
         next();
     };
