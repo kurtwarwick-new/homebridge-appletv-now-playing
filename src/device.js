@@ -72,6 +72,7 @@ class Device {
 
     configureTVService = () => {
         if (!this.config.showTvAccessory) {
+            this.accessory.removeService(this.platform.api.hap.Service.Television);
             return;
         }
 
