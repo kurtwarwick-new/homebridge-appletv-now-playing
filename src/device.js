@@ -51,17 +51,8 @@ class Device {
         this.platform.debug(`Configuring the information service for accessory (${this.device.name} [${this.device.uid}]).`);
 
         try {
-            let accessoryInformationService = accessory.getServiceByUUIDAndSubType(`${accessory.context.uid}_information`);
-
-            if (!accessoryInformationService) {
-                accessoryInformationService = new this.platform.api.hap.Service.AccessoryInformation(`${this.device.name} Information`, `${accessory.context.uid}_information`);
-
-                this.platform.debug(accessoryInformationService.UUID);
-
-                accessory.addService(accessoryInformationService);
-            }
-
-            accessoryInformationService
+            accessory
+                .getService(this.platform.api.hap.Service.AccessoryInformation)
                 .setCharacteristic(this.platform.api.hap.Characteristic.Manufacturer, "Apple")
                 .setCharacteristic(this.platform.api.hap.Characteristic.Model, "Apple TV")
                 .setCharacteristic(this.platform.api.hap.Characteristic.SerialNumber, this.device.uid)
