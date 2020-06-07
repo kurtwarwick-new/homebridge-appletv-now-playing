@@ -182,7 +182,7 @@ class Device {
             if (!this.switchService) {
                 this.switchService = this.accessory.addService(
                     this.platform.api.hap.Service.Switch,
-                    `${this.device.name} '${input.name}' Switch`,
+                    `${this.device.name} Switch`,
                     `${this.accessory.context.uid}_switch`
                 );
             }
