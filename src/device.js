@@ -120,7 +120,7 @@ class Device {
             this.tvService.addLinkedService(this.speakerService);
 
             if (this.config.inputs && this.config.inputs.length) {
-                if (accessory.context.inputs.length > this.config.inputs.length) {
+                if (accessory.context.inputs && accessory.context.inputs.length > this.config.inputs.length) {
                     let difference = accessory.context.inputs.length - this.config.inputs.length;
 
                     for (let index = accessory.context.inputs.length - 1; index > difference - 1; index--) {
