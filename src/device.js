@@ -56,6 +56,8 @@ class Device {
             if (!accessoryInformationService) {
                 accessoryInformationService = new this.platform.api.hap.Service.AccessoryInformation(`${this.device.name} Information`, `${accessory.context.uid}_information`);
 
+                this.platform.debug(accessoryInformationService.UUID);
+
                 accessory.addService(accessoryInformationService);
             }
 
