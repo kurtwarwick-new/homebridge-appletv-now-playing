@@ -3,7 +3,9 @@ const Accessory = require("./accessory");
 
 class TelevisionAccessory extends Accessory {
     constructor(platform, config, device) {
-        super(TelevisionAccessory.Type, platform, config, device)
+        super(TelevisionAccessory.Type, platform, config, device);
+
+        this.configureServices();
     }
 
     configureServices = () => {

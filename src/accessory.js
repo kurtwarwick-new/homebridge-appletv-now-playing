@@ -11,8 +11,6 @@ class Accessory {
         this.configureAccessory();
     }
 
-    configureServices = () => {}
-
     configureAccessory = () => {
         let accessoryUid = this.platform.api.hap.uuid.generate(`${this.device.uid}_apple_tv_${this.type}`);
         let deviceAccessories = this.platform.accessories.filter((accessory) => accessory.context.uid === this.device.uid);
@@ -35,8 +33,6 @@ class Accessory {
 
             this.platform.updateAccessories([this.accessory]);
         }
-
-        this.configureServices();
 
         this.platform.log(`${this.type} accessory (${this.device.name} [${this.device.uid}]) ready.`);
     };
