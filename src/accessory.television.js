@@ -1,10 +1,11 @@
 const appletv = require("node-appletv-x");
+const Accessory = require("./accessory");
 
 let Characteristics;
 
 class TelevisionAccessory extends Accessory {
     constructor() {
-        this.type = "television";
+        this.type = TelevisionAccessory.Type;
     }
 
     configureServices = () => {
@@ -200,5 +201,7 @@ class TelevisionAccessory extends Accessory {
             );
     };
 }
+
+TelevisionAccessory.Type = "television";
 
 module.exports = TelevisionAccessory;

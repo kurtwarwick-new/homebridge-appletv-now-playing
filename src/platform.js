@@ -57,11 +57,22 @@ class Platform {
     cleanupAccessory = (accessory) => {
         let foundAccessory = this.config.devices.filter((deviceConfiguration) => {
             let credentials = appletv.parseCredentials(deviceConfiguration.credentials);
-            accessory.UUID === `${credentials.uniqueIdentifier}_apple_tv`;
+            return accessory.UUID === `${credentials.uniqueIdentifier}_apple_tv_${SwitchAccessory.Type}`;
         });
 
         if (!foundAccessory) {
-            this.debug(`Removing orphaned accessory [${accessory.uid}].`);
+            this.debug(`Removing orphaned ${SwitchAccessory.Type} accessory [${accessory.uid}].`);
+
+            this.unregisterAccessories([accessory]);
+        }
+
+        foundAccessory = this.config.devices.filter((deviceConfiguration) => {
+            let credentials = appletv.parseCredentials(deviceConfiguration.credentials);
+            return deviceConfiguration.showTVAccessory && accessory.UUID === `${credentials.uniqueIdentifier}_apple_tv_${TelevisionAccessory.Type}`;
+        });
+
+        if (!foundAccessory) {
+            this.debug(`Removing orphaned ${TelevisionAccessory.Type} accessory [${accessory.uid}].`);
 
             this.unregisterAccessories([accessory]);
         }
@@ -84,7 +95,7 @@ class Platform {
 
         this.devices.push(new SwitchAccessory(this, deviceConfiguration, connectedDevice));
 
-        if(deviceConfiguration.showTVSccessory) {
+        if(deviceConfiguration.showTVAccessory) {
             this.devices.push(new TelevisionAccessory(this, deviceConfiguration, connectedDevice));
         }
     };

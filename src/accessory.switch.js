@@ -1,10 +1,11 @@
 const appletv = require("node-appletv-x");
+const Accessory = require("./accessory");
 
 let Characteristics;
 
-class SwitchAccessory {
+class SwitchAccessory extends Accessory {
     constructor() {
-        this.type = "switch";
+        this.type = SwitchAccessory.Type;
     }
 
     configureServices = () => {
@@ -120,5 +121,7 @@ class SwitchAccessory {
         this.switchService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(message && message.playbackState === "Playing");
     };
 }
+
+SwitchAccessory.Type = "switch";
 
 module.exports = SwitchAccessory;
