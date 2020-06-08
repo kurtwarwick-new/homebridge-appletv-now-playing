@@ -14,12 +14,12 @@ class Platform {
 
     debug = (message) => {
         if (this.config && this.config.debug) {
-            this.log(message);
+            this.log(message.toLowerCase());
         }
     };
 
     log = (message) => {
-        this.log(message);
+        this.log(message.toLowerCase());
     };
 
     registerAccessories = (accessories) => {
@@ -80,7 +80,11 @@ class Platform {
         this.debug(`Connected to ${connectedDevice.name} [${connectedDevice.uid}].`);
         this.debug(`Loading acessory for ${connectedDevice.name} [${connectedDevice.uid}].`);
 
-        this.devices.push(new Device(this, deviceConfiguration, connectedDevice));
+        this.devices.push(new SwitchAccessory(this, deviceConfiguration, connectedDevice));
+
+        if(deviceConfiguration.showTVSccessory) {
+            this.devices.push(new TelevisionAccessory(this, deviceConfiguration, connectedDevice));
+        }
     };
 
     onApiDidFinishLaunching = () => {
