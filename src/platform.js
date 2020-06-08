@@ -91,11 +91,12 @@ class Platform {
         let connectedDevice = await devices[0].openConnection(credentials);
 
         this.debug(`Connected to ${connectedDevice.name} [${connectedDevice.uid}].`);
-        this.debug(`Loading acessory for ${connectedDevice.name} [${connectedDevice.uid}].`);
+        this.debug(`Loading ${SwitchAccessory.Type} acessory for ${connectedDevice.name} [${connectedDevice.uid}].`);
 
         this.devices.push(new SwitchAccessory(this, deviceConfiguration, connectedDevice));
 
-        if(deviceConfiguration.showTVAccessory) {
+        if(deviceConfiguration.showTvAccessory) {
+            this.debug(`Loading ${TelevisionAccessory.Type} acessory for ${connectedDevice.name} [${connectedDevice.uid}].`);
             this.devices.push(new TelevisionAccessory(this, deviceConfiguration, connectedDevice));
         }
     };
