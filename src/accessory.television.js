@@ -4,8 +4,8 @@ const Accessory = require("./accessory");
 let Characteristics;
 
 class TelevisionAccessory extends Accessory {
-    constructor() {
-        this.type = TelevisionAccessory.Type;
+    constructor(platform, config, device) {
+        super(TelevisionAccessory.Type, platform, config, device)
     }
 
     configureServices = () => {
