@@ -1,7 +1,7 @@
 const appletv = require("node-appletv-x");
 const Accessory = require("./accessory");
 
-let Characteristics;
+let this.characteristics;
 
 class SwitchAccessory extends Accessory {
     constructor(platform, config, device) {
@@ -47,15 +47,15 @@ class SwitchAccessory extends Accessory {
                 );
             }
 
-            !this.switchService.getCharacteristic(Characteristics.State) && this.switchService.addCharacteristic(Characteristics.State);
-            !this.switchService.getCharacteristic(Characteristics.Type) && this.switchService.addCharacteristic(Characteristics.Type);
-            !this.switchService.getCharacteristic(Characteristics.Title) && this.switchService.addCharacteristic(Characteristics.Title);
-            !this.switchService.getCharacteristic(Characteristics.Artist) && this.switchService.addCharacteristic(Characteristics.Artist);
-            !this.switchService.getCharacteristic(Characteristics.Album) && this.switchService.addCharacteristic(Characteristics.Album);
-            !this.switchService.getCharacteristic(Characteristics.Application) && this.switchService.addCharacteristic(Characteristics.Application);
-            !this.switchService.getCharacteristic(Characteristics.ApplicationBundleId) && this.switchService.addCharacteristic(Characteristics.ApplicationBundleId);
-            !this.switchService.getCharacteristic(Characteristics.ElapsedTime) && this.switchService.addCharacteristic(Characteristics.ElapsedTime);
-            !this.switchService.getCharacteristic(Characteristics.Duration) && this.switchService.addCharacteristic(Characteristics.Duration);
+            !this.switchService.getCharacteristic(this.characteristics.State) && this.switchService.addCharacteristic(this.characteristics.State);
+            !this.switchService.getCharacteristic(this.characteristics.Type) && this.switchService.addCharacteristic(this.characteristics.Type);
+            !this.switchService.getCharacteristic(this.characteristics.Title) && this.switchService.addCharacteristic(this.characteristics.Title);
+            !this.switchService.getCharacteristic(this.characteristics.Artist) && this.switchService.addCharacteristic(this.characteristics.Artist);
+            !this.switchService.getCharacteristic(this.characteristics.Album) && this.switchService.addCharacteristic(this.characteristics.Album);
+            !this.switchService.getCharacteristic(this.characteristics.Application) && this.switchService.addCharacteristic(this.characteristics.Application);
+            !this.switchService.getCharacteristic(this.characteristics.ApplicationBundleId) && this.switchService.addCharacteristic(this.characteristics.ApplicationBundleId);
+            !this.switchService.getCharacteristic(this.characteristics.ElapsedTime) && this.switchService.addCharacteristic(this.characteristics.ElapsedTime);
+            !this.switchService.getCharacteristic(this.characteristics.Duration) && this.switchService.addCharacteristic(this.characteristics.Duration);
             !this.switchService.getCharacteristic(this.platform.api.hap.Characteristic.Active) && this.switchService.addCharacteristic(this.platform.api.hap.Characteristic.Active);
 
             this.switchService.getCharacteristic(this.platform.api.hap.Characteristic.On).on("set", this.onPower);
@@ -109,15 +109,15 @@ class SwitchAccessory extends Accessory {
             message.playbackState = message.playbackState[0].toUpperCase() + message.playbackState.substring(1).toLowerCase();
         }
 
-        this.switchService.getCharacteristic(Characteristics.State).updateValue(message && message.playbackState ? message.playbackState : "-");
-        this.switchService.getCharacteristic(Characteristics.Type).updateValue(message ? (message.album && message.artist ? "Music" : "Video") : "-");
-        this.switchService.getCharacteristic(Characteristics.Title).updateValue(message && message.title ? message.title : "-");
-        this.switchService.getCharacteristic(Characteristics.Artist).updateValue(message && message.artist ? message.artist : "-");
-        this.switchService.getCharacteristic(Characteristics.Album).updateValue(message && message.album ? message.album : "-");
-        this.switchService.getCharacteristic(Characteristics.Application).updateValue(message && message.appDisplayName ? message.appDisplayName : "-");
-        this.switchService.getCharacteristic(Characteristics.ApplicationBundleId).updateValue(message && message.appBundleIdentifier ? message.appBundleIdentifier : "-");
-        this.switchService.getCharacteristic(Characteristics.ElapsedTime).updateValue(message && message.elapsedTime > 0 ? Math.round(message.elapsedTime) : "-");
-        this.switchService.getCharacteristic(Characteristics.Duration).updateValue(message && message.duration > 0 ? Math.round(message.duration) : "-");
+        this.switchService.getCharacteristic(this.characteristics.State).updateValue(message && message.playbackState ? message.playbackState : "-");
+        this.switchService.getCharacteristic(this.characteristics.Type).updateValue(message ? (message.album && message.artist ? "Music" : "Video") : "-");
+        this.switchService.getCharacteristic(this.characteristics.Title).updateValue(message && message.title ? message.title : "-");
+        this.switchService.getCharacteristic(this.characteristics.Artist).updateValue(message && message.artist ? message.artist : "-");
+        this.switchService.getCharacteristic(this.characteristics.Album).updateValue(message && message.album ? message.album : "-");
+        this.switchService.getCharacteristic(this.characteristics.Application).updateValue(message && message.appDisplayName ? message.appDisplayName : "-");
+        this.switchService.getCharacteristic(this.characteristics.ApplicationBundleId).updateValue(message && message.appBundleIdentifier ? message.appBundleIdentifier : "-");
+        this.switchService.getCharacteristic(this.characteristics.ElapsedTime).updateValue(message && message.elapsedTime > 0 ? Math.round(message.elapsedTime) : "-");
+        this.switchService.getCharacteristic(this.characteristics.Duration).updateValue(message && message.duration > 0 ? Math.round(message.duration) : "-");
         this.switchService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(message && message.playbackState === "Playing");
     };
 }

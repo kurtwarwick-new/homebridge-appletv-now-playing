@@ -1,13 +1,12 @@
 class Accessory {
     constructor(type, platform, config, device) {
-        Characteristics = require("./characteristics")(platform.api);
-
         this.type = type;
         this.platform = platform;
         this.config = config;
         this.device = device;
         this.power = false;
         this.powerTimer = null;
+        this.characteristics = require("./characteristics")(platform.api);
 
         this.configureAccessory();
     }
