@@ -39,3 +39,5 @@ class Accessory {
         this.platform.log(`${this.type} accessory (${this.device.name} [${this.device.uid}]) ready.`);
     };
 }
+
+module.exports = Accessory;
