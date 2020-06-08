@@ -1,5 +1,7 @@
 const appletv = require("node-appletv-x");
-const Device = require("./device");
+
+const SwitchAccessory = require("./accessory.switch");
+const TelevisionAccessory = require("./accessory.television");
 
 class Platform {
     constructor(log, config, api) {
