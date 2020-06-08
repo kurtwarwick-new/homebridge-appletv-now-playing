@@ -1,8 +1,6 @@
 const appletv = require("node-appletv-x");
 const Accessory = require("./accessory");
 
-let this.characteristics;
-
 class SwitchAccessory extends Accessory {
     constructor(platform, config, device) {
         super(SwitchAccessory.Type, platform, config, device)
