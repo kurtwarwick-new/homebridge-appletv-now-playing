@@ -34,7 +34,7 @@ class Accessory {
             this.platform.updateAccessories([this.accessory]);
         }
 
-        this.configureServices();
+        Accessory.prototype.configureServices && Accessory.prototype.configureServices.call(this);
 
         this.platform.log(`${this.type} accessory (${this.device.name} [${this.device.uid}]) ready.`);
     };
