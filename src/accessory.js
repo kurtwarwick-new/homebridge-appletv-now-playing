@@ -1,5 +1,7 @@
 class Accessory {
     constructor(type, platform, config, device) {
+        this.configureAccessory = this.configureAccessory.bind(this);
+
         this.type = type;
         this.platform = platform;
         this.config = config;
@@ -11,7 +13,7 @@ class Accessory {
         this.configureAccessory();
     }
 
-    configureAccessory = () => {
+    configureAccessory() {
         let accessoryUid = this.platform.api.hap.uuid.generate(`${this.device.uid}_apple_tv_${this.type}`);
         let deviceAccessories = this.platform.accessories.filter((accessory) => accessory.context.uid === this.device.uid);
 

@@ -5,10 +5,20 @@ class TelevisionAccessory extends Accessory {
     constructor(platform, config, device) {
         super(TelevisionAccessory.Type, platform, config, device);
 
+        this.configureServices = this.configureServices.bind(this);
+        this.configureAccessoryInformationService = this.configureAccessoryInformationService.bind(this);
+        this.configureTVService = this.configureTVService.bind(this);
+        this.configureInputServices = this.configureInputServices.bind(this);
+        this.onInput = this.onInput.bind(this);
+        this.onPower = this.onPower.bind(this);
+        this.onDeviceInfo = this.onDeviceInfo.bind(this);
+        this.onSupportedCommands = this.onSupportedCommands.bind(this);
+        this.onNowPlaying = this.onNowPlaying.bind(this);
+
         this.configureServices();
     }
 
-    configureServices = () => {
+    configureServices() {
         this.configureAccessoryInformationService();
         this.configureTVService();
         this.configureInputServices();
@@ -16,7 +26,7 @@ class TelevisionAccessory extends Accessory {
         this.powerTimer = setTimeout(() => this.device.sendIntroduction().then(this.onDeviceInfo), 5000);
     };
 
-    configureAccessoryInformationService = () => {
+    configureAccessoryInformationService() {
         this.platform.debug(`configuring ${this.type} accessory information service for accessory (${this.device.name} [${this.device.uid}]).`);
 
         try {
@@ -34,7 +44,7 @@ class TelevisionAccessory extends Accessory {
         }
     };
 
-    configureTVService = () => {
+    configureTVService() {
         this.platform.debug(`configuring television service for ${this.type} accessory (${this.device.name} [${this.device.uid}]).`);
 
         try {
@@ -61,7 +71,7 @@ class TelevisionAccessory extends Accessory {
         }
     };
 
-    configureInputServices = () => {
+    configureInputServices() {
         this.platform.debug(`configuring input service(s) for ${this.type} accessory (${this.device.name} [${this.device.uid}]).`);
 
         try {
@@ -119,13 +129,7 @@ class TelevisionAccessory extends Accessory {
         }
     };
 
-    onInputConfiguredName = async (index, value, next) => {
-        this.accessory.context.inputs[index].name = value;
-
-        next();
-    };
-
-    onInput = async (value, next) => {
+    async onInput(value, next) {
         this.platform.debug(`opening app ${value} for ${this.type}  accessory (${this.device.name} [${this.device.uid}]).`);
 
         let input = this.config.inputs[value];
@@ -149,7 +153,7 @@ class TelevisionAccessory extends Accessory {
         next();
     };
 
-    onPower = async (value, next) => {
+    async onPower(value, next) {
         clearTimeout(this.powerTimer);
 
         this.platform.debug(`turning ${this.type} accessory (${this.device.name} [${this.device.uid}]) ${value ? "on" : "off"}.`);
@@ -168,7 +172,7 @@ class TelevisionAccessory extends Accessory {
         next();
     };
 
-    onDeviceInfo = (message) => {
+    onDeviceInfo(message) {
         this.power = message.payload.logicalDeviceCount == 1;
         this.switchService && this.switchService.getCharacteristic(this.platform.api.hap.Characteristic.On).updateValue(this.power);
         this.tvService && this.tvService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(this.power);
@@ -176,7 +180,7 @@ class TelevisionAccessory extends Accessory {
         this.powerTimer = setTimeout(() => this.device.sendIntroduction().then(this.onDeviceInfo), 5000);
     };
 
-    onSupportedCommands = (message) => {
+    onSupportedCommands(message) {
         if (!!message) {
             if (!message.length) {
                 this.switchService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(false);
@@ -184,7 +188,7 @@ class TelevisionAccessory extends Accessory {
         }
     };
 
-    onNowPlaying = (message) => {
+    onNowPlaying(message) {
         if (message && message.playbackState && message.playbackState.length > 1) {
             message.playbackState = message.playbackState[0].toUpperCase() + message.playbackState.substring(1).toLowerCase();
         }

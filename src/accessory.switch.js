@@ -4,18 +4,26 @@ const Accessory = require("./accessory");
 class SwitchAccessory extends Accessory {
     constructor(platform, config, device) {
         super(SwitchAccessory.Type, platform, config, device);
-        
+
+        this.configureServices = this.configureServices.bind(this);
+        this.configureAccessoryInformationService = this.configureAccessoryInformationService.bind(this);
+        this.configureSwitchService = this.configureSwitchService.bind(this);
+        this.onPower = this.onPower.bind(this);
+        this.onDeviceInfo = this.onDeviceInfo.bind(this);
+        this.onSupportedCommands = this.onSupportedCommands.bind(this);
+        this.onNowPlaying = this.onNowPlaying.bind(this);
+
         this.configureServices();
     }
 
-    configureServices = () => {
+    configureServices() {
         this.configureAccessoryInformationService();
         this.configureSwitchService();
 
         this.powerTimer = setTimeout(() => this.device.sendIntroduction().then(this.onDeviceInfo), 5000);
     };
 
-    configureAccessoryInformationService = () => {
+    configureAccessoryInformationService() {
         this.platform.debug(`configuring ${this.type} accessory information service for accessory (${this.device.name} [${this.device.uid}]).`);
 
         try {
@@ -33,7 +41,7 @@ class SwitchAccessory extends Accessory {
         }
     };
 
-    configureSwitchService = () => {
+    configureSwitchService() {
         this.platform.debug(`configuring switch service for ${this.type} accessory (${this.device.name} [${this.device.uid}]).`);
 
         try {
@@ -70,7 +78,7 @@ class SwitchAccessory extends Accessory {
         }
     };
 
-    onPower = async (value, next) => {
+    async onPower(value, next) {
         clearTimeout(this.powerTimer);
 
         this.platform.debug(`turning ${this.type} accessory (${this.device.name} [${this.device.uid}]) ${value ? "on" : "off"}.`);
@@ -88,7 +96,7 @@ class SwitchAccessory extends Accessory {
         next();
     };
 
-    onDeviceInfo = (message) => {
+    onDeviceInfo(message) {
         this.power = message.payload.logicalDeviceCount == 1;
         this.switchService && this.switchService.getCharacteristic(this.platform.api.hap.Characteristic.On).updateValue(this.power);
         this.tvService && this.tvService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(this.power);
@@ -96,7 +104,7 @@ class SwitchAccessory extends Accessory {
         this.powerTimer = setTimeout(() => this.device.sendIntroduction().then(this.onDeviceInfo), 5000);
     };
 
-    onSupportedCommands = (message) => {
+    onSupportedCommands(message) {
         if (!!message) {
             if (!message.length) {
                 this.switchService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(false);
@@ -104,7 +112,7 @@ class SwitchAccessory extends Accessory {
         }
     };
 
-    onNowPlaying = (message) => {
+    onNowPlaying(message) {
         if (message && message.playbackState && message.playbackState.length > 1) {
             message.playbackState = message.playbackState[0].toUpperCase() + message.playbackState.substring(1).toLowerCase();
         }
