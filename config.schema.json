@@ -3,6 +3,7 @@
     "pluginType": "platform",
     "singular": true,
     "schema": {
+        "type": "object",
         "debug": {
             "title": "Debug",
             "description": "Log some helpful debug information intended for troubleshooting.",
@@ -10,8 +11,9 @@
         },
         "devices": {
             "type": "arrray",
+            "title": "Devices",
             "items": {
-                "title": "Devices",
+                "title": "Device",
                 "type": "object",
                 "properties": {
                     "name": {
@@ -34,20 +36,5 @@
                 }
             }
         }
-    },
-    "layout": [
-        {
-            "type": "section",
-            "title": "Devices",
-            "expandable": true,
-            "expanded": true,
-            "items": {
-                "key": "devices",
-                "type": "array",
-                "orderable": false,
-                "buttonText": "Add Device",
-                "items": ["devices[].name", "devices[].credentials", "devices[].showTvAccessory"]
-            }
-        }
-    ]
+    }
 }
