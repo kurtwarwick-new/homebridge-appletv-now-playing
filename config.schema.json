@@ -2,23 +2,6 @@
     "pluginAlias": "AppleTvNowPlayingPlatform",
     "pluginType": "platform",
     "singular": true,
-    "layout": {
-        "type": "section",
-        "title": "Devices",
-        "expandable": true,
-        "expanded": true,
-        "items": {
-            "key": "devices",
-            "type": "array",
-            "orderable": false,
-            "buttonText": "Add Device",
-            "items": [
-                "devices[].name",
-                "devices[].credentials",
-                "devices[].showTvAccessory"
-            ]
-        }
-    },
     "schema": {
         "debug": {
             "title": "Debug",
@@ -34,12 +17,14 @@
                     "name": {
                         "title": "Name",
                         "description": "The name you would like to expose for the device",
-                        "type": "string"
+                        "type": "string",
+                        "required": true
                     },
                     "credentials": {
                         "title": "Credentials",
                         "description": "The credentials needed to authorise connection to the device",
-                        "type": "string"
+                        "type": "string",
+                        "required": true
                     },
                     "showTvAccessory": {
                         "title": "Show TV Accessory (Work in progress)",
@@ -49,5 +34,20 @@
                 }
             }
         }
-    }
+    },
+    "layout": [
+        {
+            "type": "section",
+            "title": "Devices",
+            "expandable": true,
+            "expanded": true,
+            "items": {
+                "key": "devices",
+                "type": "array",
+                "orderable": false,
+                "buttonText": "Add Device",
+                "items": ["devices[].name", "devices[].credentials", "devices[].showTvAccessory"]
+            }
+        }
+    ]
 }
