@@ -99,7 +99,6 @@ class SwitchAccessory extends Accessory {
     onDeviceInfo(message) {
         this.power = message.payload.logicalDeviceCount == 1;
         this.switchService && this.switchService.getCharacteristic(this.platform.api.hap.Characteristic.On).updateValue(this.power);
-        this.tvService && this.tvService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(this.power);
 
         this.powerTimer = setTimeout(() => this.device.sendIntroduction().then(this.onDeviceInfo), 5000);
     };
@@ -107,7 +106,7 @@ class SwitchAccessory extends Accessory {
     onSupportedCommands(message) {
         if (!!message) {
             if (!message.length) {
-                this.switchService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(false);
+                //this.switchService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(false);
             }
         }
     };
