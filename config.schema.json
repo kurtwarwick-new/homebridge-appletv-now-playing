@@ -4,34 +4,36 @@
     "singular": true,
     "schema": {
         "type": "object",
-        "debug": {
-            "title": "Debug",
-            "description": "Log some helpful debug information intended for troubleshooting.",
-            "type": "boolean"
-        },
-        "devices": {
-            "type": "arrray",
-            "title": "Devices",
-            "items": {
-                "title": "Device",
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "title": "Name",
-                        "description": "The name you would like to expose for the device",
-                        "type": "string",
-                        "required": true
-                    },
-                    "credentials": {
-                        "title": "Credentials",
-                        "description": "The credentials needed to authorise connection to the device",
-                        "type": "string",
-                        "required": true
-                    },
-                    "showTvAccessory": {
-                        "title": "Show TV Accessory (Work in progress)",
-                        "description": "Expose a TV Accessory for this device",
-                        "type": "boolean"
+        "properties": {
+            "debug": {
+                "title": "Debug",
+                "description": "Log some helpful debug information intended for troubleshooting.",
+                "type": "boolean"
+            },
+            "devices": {
+                "type": "arrray",
+                "title": "Devices",
+                "items": {
+                    "title": "Device",
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "title": "Name",
+                            "description": "The name you would like to expose for the device",
+                            "type": "string",
+                            "required": true
+                        },
+                        "credentials": {
+                            "title": "Credentials",
+                            "description": "The credentials needed to authorise connection to the device",
+                            "type": "string",
+                            "required": true
+                        },
+                        "showTvAccessory": {
+                            "title": "Show TV Accessory (Work in progress)",
+                            "description": "Expose a TV Accessory for this device",
+                            "type": "boolean"
+                        }
                     }
                 }
             }
