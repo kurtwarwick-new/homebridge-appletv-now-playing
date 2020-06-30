@@ -30,7 +30,7 @@ The media type is calculated by checking artist and album information. This char
 * **debug** [*optional*]: Enables limited debugging.
 * **devices**: A list of devices you would like to register with the platform.     
   * **name**: The name you would like to expose for the device.
-  * **credentials**: The credentials neede to authorise connection to the device.
+  * **credentials**: The credentials needed to authorise connection to the device.
 
 ## Retrieving credentials
 
