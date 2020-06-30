@@ -50,7 +50,7 @@ class SwitchAccessory extends Accessory {
             if (!this.switchService) {
                 this.switchService = this.accessory.addService(
                     this.platform.api.hap.Service.Switch,
-                    `${this.device.name} Switch`,
+                    `${this.config.name} Switch`,
                     `${this.accessory.context.uid}_switch`
                 );
             }
@@ -64,7 +64,7 @@ class SwitchAccessory extends Accessory {
             !this.switchService.getCharacteristic(this.characteristics.ApplicationBundleId) && this.switchService.addCharacteristic(this.characteristics.ApplicationBundleId);
             !this.switchService.getCharacteristic(this.characteristics.ElapsedTime) && this.switchService.addCharacteristic(this.characteristics.ElapsedTime);
             !this.switchService.getCharacteristic(this.characteristics.Duration) && this.switchService.addCharacteristic(this.characteristics.Duration);
-            // !this.switchService.getCharacteristic(this.platform.api.hap.Characteristic.Active) && this.switchService.addCharacteristic(this.platform.api.hap.Characteristic.Active);
+            !this.switchService.getCharacteristic(this.platform.api.hap.Characteristic.Active) && this.switchService.addCharacteristic(this.platform.api.hap.Characteristic.Active);
 
             this.switchService.getCharacteristic(this.platform.api.hap.Characteristic.On).on("set", this.onPower);
 
@@ -106,7 +106,7 @@ class SwitchAccessory extends Accessory {
     onSupportedCommands(message) {
         if (!!message) {
             if (!message.length) {
-                //this.switchService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(false);
+                this.switchService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(false);
             }
         }
     };
@@ -125,7 +125,7 @@ class SwitchAccessory extends Accessory {
         this.switchService.getCharacteristic(this.characteristics.ApplicationBundleId).updateValue(message && message.appBundleIdentifier ? message.appBundleIdentifier : "-");
         this.switchService.getCharacteristic(this.characteristics.ElapsedTime).updateValue(message && message.elapsedTime > 0 ? Math.round(message.elapsedTime) : "-");
         this.switchService.getCharacteristic(this.characteristics.Duration).updateValue(message && message.duration > 0 ? Math.round(message.duration) : "-");
-        // this.switchService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(message && message.playbackState === "Playing");
+        this.switchService.getCharacteristic(this.platform.api.hap.Characteristic.Active).updateValue(message && message.playbackState === "Playing");
     };
 }
 

@@ -51,7 +51,7 @@ class TelevisionAccessory extends Accessory {
             this.tvService = this.accessory.getService(this.platform.api.hap.Service.Television);
 
             if (!this.tvService) {
-                this.tvService = this.accessory.addService(this.platform.api.hap.Service.Television, `${this.device.name} Television`);
+                this.tvService = this.accessory.addService(this.platform.api.hap.Service.Television, `${this.config.name} Television`);
             }
 
             this.tvService
@@ -99,7 +99,7 @@ class TelevisionAccessory extends Accessory {
                     if (!inputService) {
                         inputService = this.accessory.addService(
                             this.platform.api.hap.Service.InputSource,
-                            `${this.device.name} '${input.name}' Input`,
+                            `${this.config.name} '${input.name}' Input`,
                             `${this.accessory.context.uid}_input_${index}`
                         );
                     }
