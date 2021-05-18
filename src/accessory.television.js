@@ -149,7 +149,7 @@ class TelevisionAccessory extends Accessory {
 
         this.platform.debug(`switching to ${this.type} input ${this.input.name} [${this.input.identifier}] for accessory (${this.device.name} [${this.device.uid}]).`);
 
-        let column = this.input.index % 5;
+        let column = this.input.index % 5 || 5;
         let row = (this.input.index - column) / 5;
 
         await this.device.sendKeyCommand(appletv.AppleTV.Key.Tv);
